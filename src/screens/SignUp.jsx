@@ -1,8 +1,8 @@
 import React  from "react";
-import {Button, View } from "react-native";
+import {Button, Text} from "react-native";
 const SignUp= ()=>{
    return (
-     <Button>SignUp</Button>
+     <Button title="SignUp"></Button>
    );
 }
 export default SignUp;

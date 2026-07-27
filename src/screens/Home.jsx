@@ -1,8 +1,8 @@
 import React  from "react";
-import {Button, View } from "react-native";
+import {Button, Text } from "react-native";
 const Home= ()=>{
    return (
-     <Button>Home</Button>
+     <Button title="Home"></Button>
    );
 }
 export default Home;

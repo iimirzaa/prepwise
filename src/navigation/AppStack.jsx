@@ -6,7 +6,7 @@ const Stack =createNativeStackNavigator();
 const AppStack=()=>{
     return(
        <Stack.Navigator screenOptions={
-        {headerShown=false}
+        {headerShown:false}
        }>
         <Stack.Screen
                 name="Home"
@@ -17,4 +17,4 @@ const AppStack=()=>{
 
     );
 }
-export default AuthStack;
+export default AppStack;
