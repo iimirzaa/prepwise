@@ -1,7 +1,8 @@
 import React  from "react";
 import {Button, View } from "react-native";
-export const OnBoard= ()=>{
+const OnBoard= ()=>{
    return (
      <Button>OnBoard</Button>
    );
 }
+export default OnBoard;
