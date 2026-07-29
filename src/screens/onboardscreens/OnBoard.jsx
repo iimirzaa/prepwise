@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 import { View, StyleSheet, Image, Text, Pressable } from "react-native";
-
 import MyButton from "../../../components/Botton";
 import Curve from "../../../components/curve";
 import ScreenWrapper from "../../../components/ScreenWrapper";
+
 
 const onboardingSlides = [
   {
@@ -47,15 +47,14 @@ const OnBoard = ({ navigation }) => {
     if (currentIndex < onboardingSlides.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
-      // Navigate to your next screen
-      // navigation.replace("Login");
-      console.log("Get Started");
+     navigation.navigate('Login');
     }
   };
 
   const handleSkip = () => {
-    // navigation.replace("Login");
-    console.log("Skip");
+     navigation.navigate('Login');
+  
+   
   };
 
   return (
