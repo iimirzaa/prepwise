@@ -26,6 +26,14 @@
       "sha1": "4ee75a4e8cdc8d7cb73c9d37859d5e96da254ecb"
     },
     {
+      "path": "assets/onboardlogo/applogo.png",
+      "sha1": "97fc975167d11737ded70d802f7111fa2e32d09e"
+    },
+    {
+      "path": "assets/onboardlogo/login.png",
+      "sha1": "cc81a7d2105b57f6e92a017c65f82e7d5a03da53"
+    },
+    {
       "path": "assets/onboardlogo/onbaord3.png",
       "sha1": "ecfd28ceac4fa93a715f4673c2cea35c5dfeebbf"
     },
