@@ -2,7 +2,7 @@ import React ,{ useRef,useEffect} from "react";
 import { scale, verticalScale, moderateScale, } from 'react-native-size-matters';
 import { View, StyleSheet,Text,Animated } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import ScreenWrapper from '../../components/ScreenWrapper';
+import ScreenWrapper from '../../../components/ScreenWrapper';
 const OnBoard = () => {
     const colorRef = useRef(new Animated.Value(0)).current;
 
@@ -36,17 +36,20 @@ const backgroundColor = colorRef.interpolate({
                 </View>
                 <View><Text style={styles.headerTxtLeft}>Skip</Text></View>
             </View>
-            <View style={styles.miniheader}>
+            <View style={styles.miniheaderwrapper}>
                 <Animated.View style={[styles.dot,{backgroundColor}]}>
                 </Animated.View>
-                <Text style={styles.minheadertxt}>AI-POWERED . REAL-TIME</Text>
+                <Text style={styles.minheadertxt}>AI-POWERED   .   REAL-TIME</Text>
+            </View>
+            <View>
+              <Text style={styles.bolt}>Practicce Interviews.</Text>
+              <Text style={styles.slogan}>Get Judged by AI that watches.</Text>
             </View>
         </ScreenWrapper>
     );
 }
 const styles = StyleSheet.create({
     headerWrapper: {
-        
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
@@ -84,19 +87,36 @@ const styles = StyleSheet.create({
         fontWeight:"bold",
         fontSize:moderateScale(18)
      },
-     miniheader:{
+     miniheaderwrapper:{
        flexDirection: "row",
+       justifyContent:"flex-start",
+       alignItems:'center'
      },
      dot:{
         height:verticalScale(10),
         width:scale(10),
-        borderRadius:10,
+        borderRadius:moderateScale(10),
+        margin:moderateScale(5)
         
      },
      minheadertxt:{
         color: "white",
         fontWeight:"bold",
-        fontSize:moderateScale(18)
+        fontSize:moderateScale(14)
+     },
+
+     bolt:{
+      color:"white",
+      fontWeight:"bold",
+      fontSize:moderateScale(18),
+      paddingHorizontal:moderateScale(10)
+      
+     },
+     slogan:{
+      color:"white",
+      fontWeight:"bold",
+      fontSize:moderateScale(18),
+       paddingHorizontal:moderateScale(10)
      }
 })
 export default OnBoard;
