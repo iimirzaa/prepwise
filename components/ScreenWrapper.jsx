@@ -1,20 +1,27 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import { moderateScale } from 'react-native-size-matters';
+import { StyleSheet, View, Dimensions } from 'react-native';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
+const { width } = Dimensions.get("window");
+
+const d = `
+M0 100
+C${width * 0.25} 20 ${width * 0.5} 30 ${width * 0.75} 60
+C${width * 0.875} 70 ${width * 0.95} 80 ${width} 60
+L${width} 0
+L0 0
+Z
+`;
 
 const ScreenWrapper = ({ children }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <LinearGradient
+      <View
         style={styles.wrapper}
-        colors={['#14141F', '#0A0A14']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
       >
+
         {children}
-      </LinearGradient>
+      </View>
     </SafeAreaView>
   );
 };
@@ -23,9 +30,10 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     justifyContent: 'flex-start',
-    alignItems: 'stretch',
-    padding: moderateScale(20),
+    alignItems: 'center',
+
   },
+ 
 });
 
 export default ScreenWrapper;

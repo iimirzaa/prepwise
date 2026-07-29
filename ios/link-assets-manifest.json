@@ -1,0 +1,45 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/Quicksand-Bold.ttf",
+      "sha1": "111e880f4de54ccf0a7fd14f38999b9c066e46bb"
+    },
+    {
+      "path": "assets/fonts/Quicksand-Light.ttf",
+      "sha1": "4d3b72ff1544d92ca9a435d7e34d21eda322dd76"
+    },
+    {
+      "path": "assets/fonts/Quicksand-Medium.ttf",
+      "sha1": "04b8198132a4a092b10d0631500268d6a2a0f889"
+    },
+    {
+      "path": "assets/fonts/Quicksand-Regular.ttf",
+      "sha1": "61504eaec812663121918199aac7d960229bd306"
+    },
+    {
+      "path": "assets/fonts/Quicksand-SemiBold.ttf",
+      "sha1": "339f8d3e09ad271ff12727eef33a99f7a066eee3"
+    },
+    {
+      "path": "assets/fonts/Quicksand-VariableFont_wght.ttf",
+      "sha1": "4ee75a4e8cdc8d7cb73c9d37859d5e96da254ecb"
+    },
+    {
+      "path": "assets/onboardlogo/onbaord3.png",
+      "sha1": "ecfd28ceac4fa93a715f4673c2cea35c5dfeebbf"
+    },
+    {
+      "path": "assets/onboardlogo/onboard1.png",
+      "sha1": "64aeed38e6b38eed46ebad389a9aeee20e976373"
+    },
+    {
+      "path": "assets/onboardlogo/onboard11.png",
+      "sha1": "4ffd8cffdc0c16d919eb099a92dfdff1e836fd51"
+    },
+    {
+      "path": "assets/onboardlogo/onboard2.png",
+      "sha1": "64aeed38e6b38eed46ebad389a9aeee20e976373"
+    }
+  ]
+}

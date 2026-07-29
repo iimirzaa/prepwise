@@ -1,122 +1,164 @@
-import React ,{ useRef,useEffect} from "react";
-import { scale, verticalScale, moderateScale, } from 'react-native-size-matters';
-import { View, StyleSheet,Text,Animated } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
-import ScreenWrapper from '../../../components/ScreenWrapper';
-const OnBoard = () => {
-    const colorRef = useRef(new Animated.Value(0)).current;
+import React, { useState } from "react";
+import { scale, verticalScale, moderateScale } from "react-native-size-matters";
+import { View, StyleSheet, Image, Text, Pressable } from "react-native";
 
-useEffect(() => {
-  Animated.loop(
-    Animated.sequence([
-      Animated.timing(colorRef, {
-        toValue: 1,
-        duration: 1500,
-        useNativeDriver: false,
-      }),
-      Animated.timing(colorRef, {
-        toValue: 0,
-        duration: 1500,
-        useNativeDriver: false,
-      }),
-    ])
-  ).start();
-}, []);
+import MyButton from "../../../components/Botton";
+import Curve from "../../../components/curve";
+import ScreenWrapper from "../../../components/ScreenWrapper";
 
-const backgroundColor = colorRef.interpolate({
-  inputRange: [0, 1],
-  outputRange: ['#1E1ED3', '#E1872C'],
-});
-    return (
-        <ScreenWrapper>
-            <View style={styles.headerWrapper}>
-                <View style={styles.wrapperleft}>
-                <LinearGradient colors={["#2C5EAD","#4BB8FA"]} start={{x:0,y:0}} end={{x:1,y:1}} style={styles.minilogo}><Text style={styles.logotxt}>P</Text></LinearGradient>
-                <View><Text style={styles.headerTxt}>Prepwise</Text></View>
-                </View>
-                <View><Text style={styles.headerTxtLeft}>Skip</Text></View>
-            </View>
-            <View style={styles.miniheaderwrapper}>
-                <Animated.View style={[styles.dot,{backgroundColor}]}>
-                </Animated.View>
-                <Text style={styles.minheadertxt}>AI-POWERED   .   REAL-TIME</Text>
-            </View>
-            <View>
-              <Text style={styles.bolt}>Practicce Interviews.</Text>
-              <Text style={styles.slogan}>Get Judged by AI that watches.</Text>
-            </View>
-        </ScreenWrapper>
-    );
-}
+const onboardingSlides = [
+  {
+    id: 1,
+    icon: require("../../../assets/onboardlogo/onboard11.png"),
+    title: "AI-Powered",
+    titleHighlight: "Interview Practice",
+    description:
+      "Get real-time feedback, smart suggestions and improve with every practice session.",
+    buttonText: "Next",
+  },
+  {
+    id: 2,
+    icon: require("../../../assets/onboardlogo/onboard2.png"),
+    title: "Personalized",
+    titleHighlight: "Feedback",
+    description:
+      "Detailed insights on your answers, communication, confidence and areas to improve.",
+    buttonText: "Next",
+  },
+  {
+    id: 3,
+    icon: require('../../../assets/onboardlogo/onbaord3.png'),
+    title: "Practice Anytime,",
+    titleHighlight: "Anywhere",
+    description:
+      "Choose from multiple interview categories and practice at your own pace.",
+    buttonText: "Get Started",
+  },
+];
+
+export { onboardingSlides };
+
+const OnBoard = ({ navigation }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const currentSlide = onboardingSlides[currentIndex];
+
+  const handleNext = () => {
+    if (currentIndex < onboardingSlides.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    } else {
+      // Navigate to your next screen
+      // navigation.replace("Login");
+      console.log("Get Started");
+    }
+  };
+
+  const handleSkip = () => {
+    // navigation.replace("Login");
+    console.log("Skip");
+  };
+
+  return (
+    <ScreenWrapper>
+      <View style={styles.wrapper}>
+        <View style={styles.skipwrapper}>
+          <Curve />
+
+          <Pressable style={styles.skipbtn} onPress={handleSkip}>
+            <Text style={styles.skiptxt}>Skip</Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.imgwrapper}>
+          <Image
+            source={currentSlide.icon}
+            style={styles.imgstyle}
+            
+          />
+        </View>
+
+        <Text style={styles.header}>{currentSlide.title}</Text>
+
+        <Text style={styles.subheader}>
+          {currentSlide.titleHighlight}
+        </Text>
+
+        <Text style={styles.description}>
+          {currentSlide.description}
+        </Text>
+
+        <MyButton
+          text={currentSlide.buttonText}
+          onPress={handleNext}
+        />
+      </View>
+    </ScreenWrapper>
+  );
+};
+
 const styles = StyleSheet.create({
-    headerWrapper: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        
-
-    },
-    wrapperleft:{
-    marginBottom:moderateScale(10),
-    flexDirection: "row",
-    justifyContent: "space-between",
+  wrapper: {
+    flex: 1,
+    justifyContent: "flex-start",
     alignItems: "center",
-       
-        
-    },
-    minilogo:{
-        padding:scale(5),
-        marginRight:10,
-        borderRadius:moderateScale(10),
-        width:scale(30),
-        alignItems:"center"
+    paddingHorizontal: moderateScale(20),
+  },
 
-    },
-    logotxt:{
-     color: "white",
-        fontWeight:"bold",
-        fontSize:moderateScale(18)
-    },
-    headerTxt: {
-        color: "white",
-        fontWeight:"bold",
-        fontSize:moderateScale(18)
-    },
-     headerTxtLeft:{
-        color: "#696D6F",
-        fontWeight:"bold",
-        fontSize:moderateScale(18)
-     },
-     miniheaderwrapper:{
-       flexDirection: "row",
-       justifyContent:"flex-start",
-       alignItems:'center'
-     },
-     dot:{
-        height:verticalScale(10),
-        width:scale(10),
-        borderRadius:moderateScale(10),
-        margin:moderateScale(5)
-        
-     },
-     minheadertxt:{
-        color: "white",
-        fontWeight:"bold",
-        fontSize:moderateScale(14)
-     },
+  skipwrapper: {
+    width: "100%",
+    height: verticalScale(100),
+    position: "relative",
+  },
 
-     bolt:{
-      color:"white",
-      fontWeight:"bold",
-      fontSize:moderateScale(18),
-      paddingHorizontal:moderateScale(10)
-      
-     },
-     slogan:{
-      color:"white",
-      fontWeight:"bold",
-      fontSize:moderateScale(18),
-       paddingHorizontal:moderateScale(10)
-     }
-})
+  skipbtn: {
+    position: "absolute",
+    top: moderateScale(12),
+    right: moderateScale(16),
+    zIndex: 2,
+  },
+
+  skiptxt: {
+    fontFamily: "Quicksand-SemiBold",
+    fontSize: moderateScale(16),
+    color: "#000",
+  },
+
+  imgwrapper: {
+    height: verticalScale(300),
+    width: scale(400),
+  
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  imgstyle: {
+    width: "100%",
+    height: "100%",
+  },
+
+  header: {
+   
+    fontSize: moderateScale(24),
+    color: "#7B61FF",
+    fontFamily: "Quicksand-Bold",
+  },
+
+  subheader: {
+    fontSize: moderateScale(24),
+    color: "#000",
+    fontFamily: "Quicksand-Bold",
+    marginBottom: verticalScale(12),
+  },
+
+  description: {
+    fontSize: moderateScale(16),
+    color: "#555",
+    fontFamily: "Quicksand-Medium",
+    textAlign: "center",
+    lineHeight: moderateScale(24),
+    paddingHorizontal: moderateScale(10),
+    marginBottom: verticalScale(10),
+  },
+});
+
 export default OnBoard;
