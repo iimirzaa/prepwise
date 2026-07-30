@@ -47,12 +47,14 @@ const OnBoard = ({ navigation }) => {
     if (currentIndex < onboardingSlides.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
-     navigation.navigate('Login');
+     console.log("Skip pressed");
+  navigation.replace("Login");
+  console.log("Navigation called");
     }
   };
 
   const handleSkip = () => {
-     navigation.navigate('Login');
+     navigation.replace('Login');
   
    
   };

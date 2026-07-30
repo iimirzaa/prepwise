@@ -1,92 +1,135 @@
 import React, { useState } from "react";
-import { StyleSheet, TextInput, Image, View ,Text} from "react-native";
+import { StyleSheet, TextInput, Image, View, Text ,Pressable} from "react-native";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import MyButton from "../../../components/Botton";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
-import { Mail } from "lucide-react-native";
+import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailFocus, seteFocus] = useState(false);
+  const [passwordFocus, setpFocus] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
 
   return (
     <ScreenWrapper>
       <View style={styles.wrapper}>
-        
+        <View style={styles.logowrapper}>
+          <Image style={styles.logoimg} source={require("../../../assets/onboardlogo/applogo.png")}></Image>
+          <Text style={styles.logotxt}>Prepwise</Text>
+        </View>
+
         <Image
-        source={require("../../../assets/onboardlogo/login.png")}
-        style={styles.img}
-      />
-       
+          source={require("../../../assets/onboardlogo/login.png")}
+          style={styles.img}
+        />
+
         <View style={styles.loginbox}>
-           <Text style={styles.greet}>Welcome Back!</Text>
-        <Text style={styles.wish}>Login to continue your journey</Text>
+          <Text style={styles.greet}>Welcome Back!</Text>
+          <Text style={styles.wish}>Login to continue your journey</Text>
+
+
+          <View style={[styles.inputContainer, emailFocus && { borderColor: "#6F49F6" }]}>
+            <MaterialDesignIcons
+              name="email-outline"
+              size={18}
+              color={emailFocus ? "#6F49F6" : "#888"}
+            />
+            <TextInput
+              onFocus={() => seteFocus(true)}
+              onBlur={() => seteFocus(false)}
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor="#999"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              value={email}
+              onChangeText={setEmail}>
+
+            </TextInput>
+          </View>
+          <View style={[styles.inputContainer, passwordFocus && { borderColor: "#6F49F6" }]}>
+           <MaterialDesignIcons
+              name="lock-outline" size={18} color={passwordFocus ? "#6F49F6" : "#888"} />
+            <TextInput
+              onFocus={() => setpFocus(true)}
+              onBlur={() => setpFocus(false)}
+
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor="#999"
+              secureTextEntry={!showPassword}
+              autoCapitalize="none"
+              value={password}
+              onChangeText={setPassword}
+            />
+          <Pressable onPress={() => setShowPassword(!showPassword)}>
+  {showPassword ? (
+    <MaterialDesignIcons name="eye-outline" size={18} color={passwordFocus ? "#6F49F6" : "#888"} />
+  ) : (
+    <MaterialDesignIcons name="eye-off-outline" size={18} color={passwordFocus ? "#6F49F6" : "#888"} />
+  )}
+</Pressable>
       
+          </View>
+          <Text style={styles.forgettxt}>Forget Password?</Text>
 
-      <View style={styles.inputContainer}>
-        <Mail></Mail>
-        <TextInput
-
-          style={styles.input}
-          placeholder="Email"
-          placeholderTextColor="#999"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          value={email}
-          onChangeText={setEmail}
-        />
-      </View>
-       <View style={styles.inputContainer}>
-        
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor="#999"
-          keyboardType='visible-password'
-          autoCapitalize="none"
-          value={password}
-          onChangeText={setPassword}
-        />
-      </View>
-      <Text style={styles.forgettxt}>Forget Password?</Text>
-
-      <MyButton text="Login" onPress={null} />
-      <Text style={styles.tmpacc}>Don't have account?<Text style={{color:"#6649F6"}}> Sign up</Text></Text>
-      </View>
+          <MyButton text="Login" onPress={null} />
+          <Text style={styles.tmpacc}>Don't have account?<Text style={{ color: "#6649F6" }}> Sign up</Text></Text>
+        </View>
       </View>
     </ScreenWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-   wrapper: {
+  wrapper: {
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "flex-start",
     paddingHorizontal: moderateScale(20),
   },
-  loginbox:{
-    height:"auto",
-    width:"100%",
-  
-    padding:moderateScale(10),
-    borderRadius:moderateScale(12),
-    backgroundColor:"white",
-    elevation:10,
+  logowrapper:{
+     flexDirection:"row",
+     justifyContent:"center",
+     alignItems:"center",
+     height:verticalScale(50),
+     width:"100%"
+  },
+  logoimg:{
+    height:"100%",
+    width:scale(60)
+
+  },
+  logotxt:{
+    fontSize: moderateScale(24),
+    color: "#6F49F6",
+    fontFamily: "Quicksand-Bold",
+  },
+  loginbox: {
+    height: "auto",
+    width: "100%",
+
+    padding: moderateScale(10),
+    borderRadius: moderateScale(12),
+    backgroundColor: "white",
+    elevation: 10,
     shadowColor: "#000",
   },
-  
-  greet:{
-       fontSize: moderateScale(24),
+
+  greet: {
+    fontSize: moderateScale(24),
     color: "black",
     fontFamily: "Quicksand-Bold",
 
   },
-  wish:{
-       fontSize: moderateScale(16),
+  wish: {
+    fontSize: moderateScale(16),
     color: "black",
     fontFamily: "Quicksand-Medium",
-    paddingBottom:moderateScale(10)
+    paddingBottom: moderateScale(10)
 
   },
   img: {
@@ -94,7 +137,7 @@ const styles = StyleSheet.create({
     height: verticalScale(220),
     resizeMode: "contain",
     alignSelf: "center",
-    marginBottom: verticalScale(30),
+    
   },
 
   inputContainer: {
@@ -105,7 +148,8 @@ const styles = StyleSheet.create({
     borderColor: "#D9D9D9",
     borderRadius: moderateScale(12),
     paddingHorizontal: scale(16),
-    justifyContent: "center",
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: verticalScale(10),
 
     // Shadow (iOS)
@@ -119,21 +163,22 @@ const styles = StyleSheet.create({
   },
 
   input: {
-    width:"100%",
+    flex: 1,
     fontSize: moderateScale(16),
     color: "#222",
   },
-  forgettxt:{
-    textAlign:"right",
-    fontFamily:"Quicksand-SemiBold",
-    color:"#6F49F6"
+  forgettxt: {
+    textAlign: "right",
+    fontFamily: "Quicksand-SemiBold",
+    color: "#6F49F6"
 
   },
-  tmpacc:{
-    fontFamily:"Quicksand-SemiBold",
-    textAlign:"center",
-    paddingBottom:moderateScale(10)
-  }
+  tmpacc: {
+    fontFamily: "Quicksand-SemiBold",
+    textAlign: "center",
+    paddingBottom: moderateScale(10)
+  },
+
 });
 
 export default Login;
