@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Dimensions } from 'react-native';
+import { StyleSheet, View, Dimensions ,ScrollView} from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 const { width } = Dimensions.get("window");
@@ -16,12 +16,16 @@ Z
 const ScreenWrapper = ({ children }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled">
       <View
         style={styles.wrapper}
       >
 
         {children}
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

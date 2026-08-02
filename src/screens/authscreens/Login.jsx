@@ -5,12 +5,15 @@ import MyButton from "../../../components/Botton";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
 
-const Login = () => {
+const Login = ({navigation}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailFocus, seteFocus] = useState(false);
   const [passwordFocus, setpFocus] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const handleSignupPress=()=>{
+    navigation.navigate("SignUp");
+   }
 
 
   return (
@@ -77,7 +80,8 @@ const Login = () => {
           <Text style={styles.forgettxt}>Forget Password?</Text>
 
           <MyButton text="Login" onPress={null} />
-          <Text style={styles.tmpacc}>Don't have account?<Text style={{ color: "#6649F6" }}> Sign up</Text></Text>
+          <Pressable onPress={handleSignupPress}>
+          <Text style={styles.tmpacc}>Don't have account?<Text style={{ color: "#6649F6" }}> Sign up</Text></Text></Pressable>
         </View>
       </View>
     </ScreenWrapper>
