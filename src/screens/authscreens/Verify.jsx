@@ -7,6 +7,9 @@ import MyButton from "../../../components/Botton";
 const verifyOtp = ({navigation}) => {
   const [email, setEmail] = useState("");
   const [emailFocus, seteFocus] = useState(false);
+  const handlePress=()=>{
+    navigation.navigate("change");
+  }
   return (
     <ScreenWrapper>
       <View style={styles.wrapper}>
@@ -52,7 +55,7 @@ const verifyOtp = ({navigation}) => {
               value={email}
               onChangeText={setEmail} />
           </View>
-          <MyButton text={"Verify OTP"} ></MyButton>
+          <MyButton text={"Verify OTP"} onPress={handlePress}></MyButton>
           
             <Text style={styles.instTxt}>Didn't receive OTP.Resend</Text>
         
