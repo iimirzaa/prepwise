@@ -35,7 +35,7 @@ const SignUp= ({navigation})=>{
                style={styles.img}
              />
              </View>
-             <View style={styles.loginbox}>
+             <View style={styles.SignUpbox}>
                <Text style={styles.greet}>Create Account!</Text>
                <Text style={styles.wish}>Start your journey now.</Text>
                 <View style={[styles.inputContainer, usernameFocus && { borderColor: "#6F49F6" }]}>
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     color: "#6F49F6",
     fontFamily: "Quicksand-Bold",
   },
-  loginbox: {
+  SignUpbox: {
     height: "auto",
     width: "100%",
     zIndex:2,
@@ -221,12 +221,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(16),
     color: "#222",
   },
-  forgettxt: {
-    textAlign: "right",
-    fontFamily: "Quicksand-SemiBold",
-    color: "#6F49F6"
-
-  },
+ 
   tmpacc: {
     fontFamily: "Quicksand-SemiBold",
     textAlign: "center",

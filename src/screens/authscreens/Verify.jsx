@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import ScreenWrapper from '../../../components/ScreenWrapper';
-import { StyleSheet, View, Image, Text, TextInput } from 'react-native';
+import { StyleSheet, View, Image, Text, TextInput,Pressable } from 'react-native';
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
 import MyButton from "../../../components/Botton";
-const sendOtp = ({navigation}) => {
+const verifyOtp = ({navigation}) => {
   const [email, setEmail] = useState("");
   const [emailFocus, seteFocus] = useState(false);
-  const handleSendPress=()=>{
-    navigation.navigate("VerifyOtp")
-  }
   return (
     <ScreenWrapper>
       <View style={styles.wrapper}>
@@ -19,16 +16,16 @@ const sendOtp = ({navigation}) => {
         </View>
         <Text style={[{fontFamily:"Quicksand-Regular"},{fontSize:moderateScale(14)}]}>AI interview Preparation</Text>
         <View style={styles.headerWrapper}>
-          <Text style={styles.main}>Forget Password?</Text>
+          <Text style={styles.main}>Verify Your Account</Text>
           <MaterialDesignIcons
-            name="lock"
+            name="shield-account"
             size={20}
             color="#6F49F6"
           />
         </View>
         <Text style={[{textAlign:"center"},{fontFamily:"Quicksand-Medium"},
 
-        ]}>Don't Worry! Enter your Email and we will send OTP.After verification you can reset your password</Text>
+        ]}>We have sent 6-digit OTP to <Text>hello@gmail.com</Text><Pressable><Text>Change</Text></Pressable></Text>
         <Image
           source={require("../../../assets/onboardlogo/forget.png")}
           style={styles.img}
@@ -39,7 +36,7 @@ const sendOtp = ({navigation}) => {
 
           <View style={[styles.inputContainer, emailFocus && { borderColor: "#6F49F6" }]}>
             <MaterialDesignIcons
-              name="email-outline"
+              name="key"
               size={18}
               color={emailFocus ? "#6F49F6" : "#888"}
             />
@@ -48,22 +45,17 @@ const sendOtp = ({navigation}) => {
               onBlur={() => seteFocus(false)}
               
               style={styles.input}
-              placeholder="Email"
+              placeholder="Enter OTP"
               placeholderTextColor="#999"
-              keyboardType="email-address"
+              keyboardType="numeric"
               autoCapitalize="none"
               value={email}
               onChangeText={setEmail} />
           </View>
-          <MyButton text={"Send OTP"} onPress={handleSendPress} ></MyButton>
-          <View style={styles.instruction}>
-            <MaterialDesignIcons
-              name="shield-account"
-              size={24}
-              color= "#6F49F6"
-            />
-            <Text style={styles.instTxt}>We will send you an otp for verification</Text>
-          </View>
+          <MyButton text={"Verify OTP"} ></MyButton>
+          
+            <Text style={styles.instTxt}>Didn't receive OTP.Resend</Text>
+        
         </View>
 
       </View>
@@ -163,8 +155,9 @@ const styles = StyleSheet.create({
   instTxt:{
     fontFamily:"Quicksand-Regular",
     fontSize:moderateScale(14),
-    paddingHorizontal:scale(5)
+    paddingHorizontal:scale(5),
+    textAlign:"center"
   }
 
 });
-export default sendOtp;
+export default verifyOtp;
