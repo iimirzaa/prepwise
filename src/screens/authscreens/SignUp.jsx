@@ -11,10 +11,10 @@ const SignUp= ({navigation})=>{
        const [usernameFocus, setusernameFocus] = useState(false);
        const [emailFocus, seteFocus] = useState(false);
        const [passwordFocus, setpFocus] = useState(false);
-        const [confirmpasswordFocus, setcpFocus] = useState(false);
+        const[confirmpasswordFocus, setcpFocus] = useState(false);
        const [showPassword, setShowPassword] = useState(false);
        const handleLoginPress=()=>{
-        navigation.navigate("Login");
+        navigation.replace("Login");
        }
        const handleSignUpPress=()=>{
         navigation.replace("Otp");
@@ -102,7 +102,7 @@ const SignUp= ({navigation})=>{
      </Pressable>
            
                </View>
-               <View style={[styles.inputContainer, passwordFocus && { borderColor: "#6F49F6" }]}>
+               <View style={[styles.inputContainer, confirmpasswordFocus && { borderColor: "#6F49F6" }]}>
                 <MaterialDesignIcons
                    name="lock-outline" size={18} color={confirmpasswordFocus ? "#6F49F6" : "#888"} />
                  <TextInput
@@ -119,9 +119,9 @@ const SignUp= ({navigation})=>{
                  />
                <Pressable onPress={() => setShowPassword(!showPassword)}>
        {showPassword ? (
-         <MaterialDesignIcons name="eye-outline" size={18} color={passwordFocus ? "#6F49F6" : "#888"} />
+         <MaterialDesignIcons name="eye-outline" size={18} color={confirmpasswordFocus ? "#6F49F6" : "#888"} />
        ) : (
-         <MaterialDesignIcons name="eye-off-outline" size={18} color={passwordFocus ? "#6F49F6" : "#888"} />
+         <MaterialDesignIcons name="eye-off-outline" size={18} color={confirmpasswordFocus ? "#6F49F6" : "#888"} />
        )}
      </Pressable>
            

@@ -4,11 +4,11 @@ import { StyleSheet, View, Image, Text, TextInput } from 'react-native';
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
 import MyButton from "../../../components/Botton";
-const sendOtp = ({navigation}) => {
+const SendOtp = ({navigation}) => {
   const [email, setEmail] = useState("");
   const [emailFocus, seteFocus] = useState(false);
   const handleSendPress=()=>{
-    navigation.navigate("VerifyOtp")
+    navigation.replace("VerifyOtp")
   }
   return (
     <ScreenWrapper>
@@ -167,4 +167,4 @@ const styles = StyleSheet.create({
   }
 
 });
-export default sendOtp;
+export default SendOtp;

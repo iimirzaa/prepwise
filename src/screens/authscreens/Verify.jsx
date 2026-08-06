@@ -5,10 +5,10 @@ import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
 import MyButton from "../../../components/Botton";
 const verifyOtp = ({navigation}) => {
-  const [email, setEmail] = useState("");
-  const [emailFocus, seteFocus] = useState(false);
+  const [otp, setoTp] = useState("");
+  const [otpFocus, setotpFocus] = useState(false);
   const handlePress=()=>{
-    navigation.navigate("change");
+    navigation.replace("change");
   }
   return (
     <ScreenWrapper>
@@ -37,23 +37,23 @@ const verifyOtp = ({navigation}) => {
 
 
 
-          <View style={[styles.inputContainer, emailFocus && { borderColor: "#6F49F6" }]}>
+          <View style={[styles.inputContainer, otpFocus && { borderColor: "#6F49F6" }]}>
             <MaterialDesignIcons
               name="key"
               size={18}
-              color={emailFocus ? "#6F49F6" : "#888"}
+              color={otpFocus ? "#6F49F6" : "#888"}
             />
             <TextInput
-              onFocus={() => seteFocus(true)}
-              onBlur={() => seteFocus(false)}
+              onFocus={() => setotpFocus(true)}
+              onBlur={() => setotpFocus(false)}
               
               style={styles.input}
               placeholder="Enter OTP"
               placeholderTextColor="#999"
               keyboardType="numeric"
               autoCapitalize="none"
-              value={email}
-              onChangeText={setEmail} />
+              value={otp}
+              onChangeText={setoTp} />
           </View>
           <MyButton text={"Verify OTP"} onPress={handlePress}></MyButton>
           

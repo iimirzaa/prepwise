@@ -3,7 +3,7 @@ import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import Login from "../screens/authscreens/Login";
 import OnBoard  from '../screens/onboardscreens/OnBoard';
 import SignUp from '../screens/authscreens/SignUp';
-import sendOtp from '../screens/authscreens/Otp';
+import SendOtp from '../screens/authscreens/Otp';
 import verifyOtp from '../screens/authscreens/Verify';
 import changePassword from '../screens/authscreens/Change';
 const Stack =createNativeStackNavigator();
@@ -26,7 +26,7 @@ const AuthStack=()=>{
             />
             <Stack.Screen
                 name="Otp"
-                component={sendOtp}
+                component={SendOtp}
             />
             <Stack.Screen
                 name="VerifyOtp"

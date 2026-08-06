@@ -12,9 +12,14 @@ const Login = ({navigation}) => {
   const [passwordFocus, setpFocus] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const handleSignupPress=()=>{
-    navigation.navigate("SignUp");
+    navigation.replace("SignUp");
    }
-
+  const handleForgetPress=()=>{
+    navigation.replace('Otp');
+  }
+  const handleLogin=()=>{
+    navigation.replace('Home');
+  }
 
   return (
     <ScreenWrapper>
@@ -77,9 +82,10 @@ const Login = ({navigation}) => {
 </Pressable>
       
           </View>
-          <Text style={styles.forgettxt}>Forget Password?</Text>
+          <Pressable onPress={handleForgetPress}>
+          <Text style={styles.forgettxt}>Forget Password?</Text></Pressable>
 
-          <MyButton text="Login" onPress={null} />
+          <MyButton text="Login" onPress={handleLogin} />
           <Pressable onPress={handleSignupPress}>
           <Text style={styles.tmpacc}>Don't have account?<Text style={{ color: "#6649F6" }}> Sign up</Text></Text></Pressable>
         </View>

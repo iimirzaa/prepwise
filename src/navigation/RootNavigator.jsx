@@ -4,7 +4,7 @@ import AuthStack from './AuthStack';
 import AppStack from './AppStack';
 
 const RootNavigator=()=>{
-     const isLoggedIn = false;
+     const isLoggedIn = true;
      const ok=false;
 
     return isLoggedIn
