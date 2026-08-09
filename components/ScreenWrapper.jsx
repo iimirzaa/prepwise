@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Dimensions ,ScrollView} from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { scale } from 'react-native-size-matters';
 const { width } = Dimensions.get("window");
 
 const d = `
@@ -35,6 +36,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
+    marginHorizontal:scale(10)
 
   },
  
