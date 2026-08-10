@@ -5,6 +5,7 @@ import { moderateScale, scale, verticalScale } from "react-native-size-matters";
 import StreakBox from '../../../components/StreakBox';
 import ReadinessContainer from '../../../components/Readinessbox';
 import Chip from '../../../components/chip';
+import Breakdown from '../../../components/Breakdown';
 const Home= ()=>{
    
    return ( 
@@ -29,8 +30,9 @@ const Home= ()=>{
        <Chip icon={'chart-line'}color={'#6f49f6'}label={'Fillers'}count={'3.1'}progress={"↓ 7.8"}iconColor={'#E3DEF5'}/>
        <Chip icon={'eye-outline'}color={'#FF653F'}label={'Eye Contact'}count={'78%'}progress={"↓ 8%"}iconColor={'#FFCA95'}/>
        <Chip icon={'badge-account'}color={'#6f49f6'}label={'Confidence'}count={'68%'}progress={"↓ 2%"}iconColor={'#E3DEF5'}/>
-
+ 
       </View>
+      <Breakdown/>
      </ScreenWrapper>
    );
 }
@@ -40,7 +42,8 @@ const styles=StyleSheet.create({
     flexDirection:"row",
     justifyContent:"space-between", 
     alignItems:"center", 
-    paddingHorizontal: scale(16),
+    width:"100%",
+   
     paddingVertical: verticalScale(10),
    
   },
@@ -72,11 +75,12 @@ const styles=StyleSheet.create({
   },
   chipstyle:{
     marginVertical:verticalScale(5),
-     paddingVertical: moderateScale(10),
-    paddingHorizontal: moderateScale(12),
+    // paddingVertical: moderateScale(10),
+    // paddingHorizontal: moderateScale(12),
+    width:"100%",
     flexDirection:'row',
     flexWrap:"wrap",
-    gap:scale(10),
+    gap:moderateScale(10)
     
 
   }

@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     elevation: 6,
     height: verticalScale(70),
-    width: scale(145),
+    width: "48%",
     borderRadius: moderateScale(12),
     paddingVertical: moderateScale(8),
     paddingHorizontal: moderateScale(8),

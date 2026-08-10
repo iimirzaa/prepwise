@@ -48,7 +48,7 @@ const StreakBox = () => {
 const styles = StyleSheet.create({
   streakbox: {
     height: verticalScale(70),
-    width: scale(300),
+    width: '100%',
     flexDirection: 'row',
     paddingVertical: moderateScale(10),
     paddingHorizontal: moderateScale(12),

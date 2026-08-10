@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   readinessbox: {
     backgroundColor: "white",
     minHeight: verticalScale(150),
-    width: scale(300),
+    width: '100%',
     borderRadius: moderateScale(12),
     marginVertical: verticalScale(5),
     elevation: 6,
