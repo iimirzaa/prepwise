@@ -4,8 +4,10 @@ import ScreenWrapper from '../../../components/ScreenWrapper';
 import { moderateScale, scale, verticalScale } from "react-native-size-matters";
 import StreakBox from '../../../components/StreakBox';
 import ReadinessContainer from '../../../components/Readinessbox';
+import Chip from '../../../components/chip';
 const Home= ()=>{
-   return (
+   
+   return ( 
      <ScreenWrapper>
       <View style={styles.headerWrapper}>
         <View style={styles.textContainer}>
@@ -22,6 +24,13 @@ const Home= ()=>{
       </View>
       <StreakBox/>
       <ReadinessContainer></ReadinessContainer>
+      <View style={styles.chipstyle}>
+       <Chip icon={'clock-outline'}color={'#6f49f6'}label={'Sessions'}count={'24'}progress={"6 this week"}iconColor={"#E3DEF5"}/>
+       <Chip icon={'chart-line'}color={'#6f49f6'}label={'Fillers'}count={'3.1'}progress={"↓ 7.8"}iconColor={'#E3DEF5'}/>
+       <Chip icon={'eye-outline'}color={'#FF653F'}label={'Eye Contact'}count={'78%'}progress={"↓ 8%"}iconColor={'#FFCA95'}/>
+       <Chip icon={'badge-account'}color={'#6f49f6'}label={'Confidence'}count={'68%'}progress={"↓ 2%"}iconColor={'#E3DEF5'}/>
+
+      </View>
      </ScreenWrapper>
    );
 }
@@ -60,6 +69,16 @@ const styles=StyleSheet.create({
     height: moderateScale(40),
     width: moderateScale(40),
     borderRadius: moderateScale(20), 
+  },
+  chipstyle:{
+    marginVertical:verticalScale(5),
+     paddingVertical: moderateScale(10),
+    paddingHorizontal: moderateScale(12),
+    flexDirection:'row',
+    flexWrap:"wrap",
+    gap:scale(10),
+    
+
   }
 })
 
