@@ -6,7 +6,11 @@ import StreakBox from '../../../components/StreakBox';
 import ReadinessContainer from '../../../components/Readinessbox';
 import Chip from '../../../components/chip';
 import Breakdown from '../../../components/Breakdown';
-const Home= ()=>{
+import PracticeBar from '../../../components/PracticeBar';
+const Home= ({navigation})=>{
+  const handlePracticePress=()=>{
+    navigation.navigate('Setup');
+  }
    
    return ( 
      <ScreenWrapper>
@@ -24,6 +28,7 @@ const Home= ()=>{
         </View>
       </View>
       <StreakBox/>
+      <PracticeBar press={handlePracticePress}/>
       <ReadinessContainer></ReadinessContainer>
       <View style={styles.chipstyle}>
        <Chip icon={'clock-outline'}color={'#6f49f6'}label={'Sessions'}count={'24'}progress={"6 this week"}iconColor={"#E3DEF5"}/>
@@ -33,7 +38,9 @@ const Home= ()=>{
  
       </View>
       <Breakdown/>
+      
      </ScreenWrapper>
+     
    );
 }
 

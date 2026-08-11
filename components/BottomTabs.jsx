@@ -3,6 +3,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 
 import HomeScreen from '../src/screens/appscreens/Home';
+import SetupScreen from '../src/screens/appscreens/Setup';
 
 
 const Tab = createBottomTabNavigator();
@@ -30,8 +31,8 @@ const BottomTabs = () => {
 
           if (route.name === 'Home') {
             iconName = 'home-outline';
-          } else if (route.name === 'Practice') {
-            iconName = 'microphone-outline';
+          } else if (route.name === 'Start Prep') {
+            iconName = 'tune-variant';
           } else if (route.name === 'Progress') {
             iconName = 'chart-line';
           } else if (route.name === 'Profile') {
@@ -49,8 +50,8 @@ const BottomTabs = () => {
       })}>
 
       <Tab.Screen name="Home" component={HomeScreen} />
-      {/* <Tab.Screen name="Practice" component={PracticeScreen} />
-      <Tab.Screen name="Progress" component={ProgressScreen} />
+      { <Tab.Screen name="Start Prep" component={SetupScreen} />
+      /*<Tab.Screen name="Progress" component={ProgressScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} /> */}
 
     </Tab.Navigator>
