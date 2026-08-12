@@ -1,9 +1,12 @@
-import React from 'react';
+import React ,{ useState} from 'react';
 import {View, StyleSheet, Pressable, Text} from 'react-native';
+
 
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import InterviewType from '../../../components/InterviewType';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
+import TargetRoleContainer from '../../../components/TargetRole';
+import Dropdown from '../../../components/Dropdown';
 
 import {
   moderateScale,
@@ -12,6 +15,7 @@ import {
 } from 'react-native-size-matters';
 import Overview from '../../../components/InterviewOverview';
 const SetupScreen = () => {
+  const [showDropdown, setDropdown] = useState(false);
   return (
     <ScreenWrapper>
       <View style={styles.container}>
@@ -44,6 +48,15 @@ const SetupScreen = () => {
         </View>
         <Overview/>
         <InterviewType/>
+        <View style={styles.targetRoleWrapper}>
+        <TargetRoleContainer showDropdown={showDropdown}press={()=>setDropdown(prev => !prev)}/>
+        {showDropdown &&(
+                        <View style={styles.dropdownview}>
+                        <Dropdown/>
+                    </View>
+                    )}
+
+        </View>
 
       </View>
     </ScreenWrapper>
@@ -57,7 +70,11 @@ const styles = StyleSheet.create({
     width:'100%'
     
   },
-
+   targetRoleWrapper: {
+    position: 'relative',
+  zIndex: 9999,
+  elevation: 9999,
+  },
   header: {
     width: '100%',
     flexDirection: 'row',
@@ -105,6 +122,17 @@ const styles = StyleSheet.create({
     color: '#777',
     marginTop: verticalScale(2),
   },
+  dropdownview:{
+    
+     position: 'absolute',
+  top: verticalScale(55), // adjust according to TargetRole height
+  left: 0,
+  width: '100%',
+  zIndex: 9999,
+  elevation: 9999,
+  
+    }
+
 
 });
 

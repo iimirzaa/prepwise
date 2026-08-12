@@ -4,7 +4,12 @@ import { moderateScale,scale, verticalScale } from 'react-native-size-matters';
 import IChip from './InterviewTypeChip';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 const InterviewType=()=>{
-    const [selectedType, setSelectedType] = useState('Behavioural');
+    const [selectedType, setSelectedType] = useState('behavioural');
+    const items=[
+    {label: 'Technical Interview', value: 'technical'},
+    {label: 'HR Interview', value: 'hr'},
+    {label: 'Behavioral Interview', value: 'behavioral'},
+  ];
 
   const types = [
     {
