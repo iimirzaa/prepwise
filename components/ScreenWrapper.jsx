@@ -17,7 +17,7 @@ Z
 const ScreenWrapper = ({ children }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}
+    <ScrollView contentContainerStyle={[{ flexGrow: 1 },{width: '100%'}]}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled">
       <View

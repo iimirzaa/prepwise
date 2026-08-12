@@ -13,14 +13,7 @@ const AppStack=()=>{
         <Stack.Screen name='MainTabs'component={BottomTabs}> 
             
         </Stack.Screen>
-        <Stack.Screen
-                name="Home"
-                component={Home}
-            />
-            <Stack.Screen
-                name="Setup"
-                component={SetupScreen}
-            />
+       
        
        </Stack.Navigator>
 
