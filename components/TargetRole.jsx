@@ -3,7 +3,7 @@ import {View,StyleSheet,Text,Pressable} from 'react-native';
 import { moderateScale,scale, verticalScale } from 'react-native-size-matters';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 
-const TargetRoleContainer=({showDropdown,press})=>{
+const TargetRoleContainer=({job,showDropdown,press})=>{
     
 
  
@@ -21,7 +21,7 @@ const TargetRoleContainer=({showDropdown,press})=>{
                         </View>
                         <View style={styles.title}>
                          <Text style={styles.heading}>Target Role</Text>
-                         <Text style={styles.subheading}>Software Engineering intern</Text>
+                         <Text style={styles.subheading}>{job.title}</Text>
                         </View>
                         <View style={styles.dropicon}>
                           <MaterialDesignIcons

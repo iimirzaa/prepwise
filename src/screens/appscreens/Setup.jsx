@@ -7,6 +7,38 @@ import InterviewType from '../../../components/InterviewType';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import TargetRoleContainer from '../../../components/TargetRole';
 import Dropdown from '../../../components/Dropdown';
+const jobs = [
+  { title: 'Software Engineer', value: 'software_engineer' },
+  { title: 'Frontend Developer', value: 'frontend_developer' },
+  { title: 'Backend Developer', value: 'backend_developer' },
+  { title: 'Full Stack Developer', value: 'full_stack_developer' },
+  { title: 'Mobile App Developer', value: 'mobile_app_developer' },
+  { title: 'React Native Developer', value: 'react_native_developer' },
+  { title: 'Flutter Developer', value: 'flutter_developer' },
+  { title: 'UI/UX Designer', value: 'ui_ux_designer' },
+  { title: 'Graphic Designer', value: 'graphic_designer' },
+  { title: 'Data Analyst', value: 'data_analyst' },
+  { title: 'Data Scientist', value: 'data_scientist' },
+  { title: 'Machine Learning Engineer', value: 'machine_learning_engineer' },
+  { title: 'AI Engineer', value: 'ai_engineer' },
+  { title: 'DevOps Engineer', value: 'devops_engineer' },
+  { title: 'Cloud Engineer', value: 'cloud_engineer' },
+  { title: 'Cybersecurity Analyst', value: 'cybersecurity_analyst' },
+  { title: 'QA Engineer', value: 'qa_engineer' },
+  { title: 'Software Tester', value: 'software_tester' },
+  { title: 'Project Manager', value: 'project_manager' },
+  { title: 'Product Manager', value: 'product_manager' },
+  { title: 'Business Analyst', value: 'business_analyst' },
+  { title: 'Marketing Manager', value: 'marketing_manager' },
+  { title: 'Sales Representative', value: 'sales_representative' },
+  { title: 'Customer Support Representative', value: 'customer_support' },
+  { title: 'HR Manager', value: 'hr_manager' },
+  { title: 'Accountant', value: 'accountant' },
+  { title: 'Financial Analyst', value: 'financial_analyst' },
+  { title: 'Teacher', value: 'teacher' },
+  { title: 'Content Writer', value: 'content_writer' },
+  { title: 'Social Media Manager', value: 'social_media_manager' },
+];
 
 import {
   moderateScale,
@@ -16,6 +48,7 @@ import {
 import Overview from '../../../components/InterviewOverview';
 const SetupScreen = () => {
   const [showDropdown, setDropdown] = useState(false);
+  const [selectedJob,setJob]=useState('');
   return (
     <ScreenWrapper>
       <View style={styles.container}>
@@ -49,10 +82,10 @@ const SetupScreen = () => {
         <Overview/>
         <InterviewType/>
         <View style={styles.targetRoleWrapper}>
-        <TargetRoleContainer showDropdown={showDropdown}press={()=>setDropdown(prev => !prev)}/>
+        <TargetRoleContainer job={selectedJob} showDropdown={showDropdown}press={()=>setDropdown(prev => !prev)}/>
         {showDropdown &&(
                         <View style={styles.dropdownview}>
-                        <Dropdown/>
+                        <Dropdown data={jobs} onSelect={(job)=>setJob(job)}/>
                     </View>
                     )}
 
@@ -72,8 +105,8 @@ const styles = StyleSheet.create({
   },
    targetRoleWrapper: {
     position: 'relative',
-  zIndex: 9999,
-  elevation: 9999,
+  // zIndex: 9999,
+  // elevation: 9999,
   },
   header: {
     width: '100%',
@@ -128,8 +161,8 @@ const styles = StyleSheet.create({
   top: verticalScale(55), // adjust according to TargetRole height
   left: 0,
   width: '100%',
-  zIndex: 9999,
-  elevation: 9999,
+  zIndex: 1,
+  elevation: 8,
   
     }
 
