@@ -1,7 +1,7 @@
 import React ,{ useState} from 'react';
 import {View, StyleSheet, Pressable, Text} from 'react-native';
 
-
+import InterviewSettingContainer from '../../../components/CustomSetting';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import InterviewType from '../../../components/InterviewType';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
@@ -90,6 +90,10 @@ const SetupScreen = () => {
                     )}
 
         </View>
+        <View style={styles.customsetting}>
+         <InterviewSettingContainer/>
+         <InterviewSettingContainer/>
+        </View>
 
       </View>
     </ScreenWrapper>
@@ -164,6 +168,11 @@ const styles = StyleSheet.create({
   zIndex: 1,
   elevation: 8,
   
+    },
+    customsetting:{
+      width:"100%",
+      flexDirection:"row",
+      gap:5
     }
 
 
