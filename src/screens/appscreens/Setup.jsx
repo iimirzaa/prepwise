@@ -9,6 +9,8 @@ import TargetRoleContainer from '../../../components/TargetRole';
 import Dropdown from '../../../components/Dropdown';
 import SkillsContainer from '../../../components/Skills';
 import MyButton from '../../../components/Botton';
+import EvaluationContainer from '../../../components/EvaluationInfo';
+import UploadDocuments from '../../../components/QuestionSource';
 const jobs = [
   { title: 'Software Engineer', value: 'software_engineer' },
   { title: 'Frontend Developer', value: 'frontend_developer' },
@@ -137,6 +139,9 @@ const SetupScreen = () => {
           )}
         </View>
         <SkillsContainer/>
+        <UploadDocuments/>
+        <EvaluationContainer/>
+
         <MyButton text={"Start Interview"}></MyButton>
 
       </View>
