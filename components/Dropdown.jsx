@@ -28,7 +28,7 @@ const Dropdown = ({data, onSelect}) => {
   />
 
   <TextInput
-    placeholder="Search Role"
+    placeholder="Search"
     placeholderTextColor="#999"
     style={styles.input}
     value={searchJob}

@@ -1,5 +1,5 @@
-import React ,{ useState} from 'react';
-import {View, StyleSheet, Pressable, Text} from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Pressable, Text } from 'react-native';
 
 import InterviewSettingContainer from '../../../components/CustomSetting';
 import ScreenWrapper from '../../../components/ScreenWrapper';
@@ -39,7 +39,21 @@ const jobs = [
   { title: 'Content Writer', value: 'content_writer' },
   { title: 'Social Media Manager', value: 'social_media_manager' },
 ];
+const difficultyLevels = [
+  { title: 'Easy', value: 'easy' },
+  { title: 'Medium', value: 'medium' },
+  { title: 'Hard', value: 'hard' },
 
+];
+const experienceLevels = [
+  { title: 'Student', value: 'student' },
+  { title: 'Fresher', value: 'fresher' },
+  { title: '1 Year', value: '1_year' },
+  { title: '2 Years', value: '2_years' },
+  { title: '3 Years', value: '3_years' },
+  { title: '4 Years', value: '4_years' },
+  { title: '5+ Years', value: '5_plus_years' },
+];
 import {
   moderateScale,
   scale,
@@ -48,14 +62,18 @@ import {
 import Overview from '../../../components/InterviewOverview';
 const SetupScreen = () => {
   const [showDropdown, setDropdown] = useState(false);
-  const [selectedJob,setJob]=useState('');
+  const [showexpDropdown, setexpDropdown] = useState(false);
+  const [showdifDropdown, setdifDropdown] = useState(false);
+  const [selectedJob, setJob] = useState('');
+  const [selectedExperience, setExperience] = useState(  { title: 'Student', value: 'student' });
+  const [selectedDifficulty, setDifficulty] = useState({ title: 'Easy', value: 'easy' });
   return (
     <ScreenWrapper>
       <View style={styles.container}>
 
         {/* Header */}
         <View style={styles.header}>
-          
+
 
           {/* Back Button */}
           <Pressable style={styles.backButton}>
@@ -65,7 +83,7 @@ const SetupScreen = () => {
               color="black"
             />
           </Pressable>
-          
+
 
           {/* Title */}
           <View style={styles.titleBox}>
@@ -79,20 +97,42 @@ const SetupScreen = () => {
           </View>
 
         </View>
-        <Overview/>
-        <InterviewType/>
+        <Overview />
+        <InterviewType />
         <View style={styles.targetRoleWrapper}>
-        <TargetRoleContainer job={selectedJob} showDropdown={showDropdown}press={()=>setDropdown(prev => !prev)}/>
-        {showDropdown &&(
-                        <View style={styles.dropdownview}>
-                        <Dropdown data={jobs} onSelect={(job)=>setJob(job)}/>
-                    </View>
-                    )}
+          <TargetRoleContainer job={selectedJob} showDropdown={showDropdown} press={() => {
+            setexpDropdown(false)
+            setdifDropdown(false)
+            setDropdown(prev => !prev)
+          }} />
+          {showDropdown && (
+            <View style={styles.dropdownview}>
+              <Dropdown data={jobs} onSelect={(job) => setJob(job)} />
+            </View>
+          )}
 
         </View>
         <View style={styles.customsetting}>
-         <InterviewSettingContainer/>
-         <InterviewSettingContainer/>
+          <InterviewSettingContainer selected={selectedExperience} icon={"speedometer"} title={"Experience"} showDropdown={showexpDropdown} press={() => {
+            setdifDropdown(false)
+            setDropdown(false)
+            setexpDropdown(prev => !prev)
+          }} />
+          <InterviewSettingContainer  selected={selectedDifficulty}icon={'signal-cellular-3'} title={'Difficulty'} showDropdown={showdifDropdown} press={() => {
+            setexpDropdown(false)
+            setDropdown(false)
+            setdifDropdown(prev => !prev)
+          }} />
+          {showexpDropdown && (
+            <View style={styles.dropdownview}>
+              <Dropdown data={experienceLevels} onSelect={(exp) => { setExperience(exp) }} />
+            </View>
+          )}
+          {showdifDropdown && (
+            <View style={styles.dropdownview}>
+              <Dropdown data={difficultyLevels} onSelect={(dif) => setDifficulty(dif)} />
+            </View>
+          )}
         </View>
 
       </View>
@@ -104,19 +144,19 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    width:'100%'
-    
+    width: '100%'
+
   },
-   targetRoleWrapper: {
+  targetRoleWrapper: {
     position: 'relative',
-  // zIndex: 9999,
-  // elevation: 9999,
+    // zIndex: 9999,
+    // elevation: 9999,
   },
   header: {
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent:"flex-start",
+    justifyContent: "flex-start",
   },
 
   backButton: {
@@ -143,8 +183,8 @@ const styles = StyleSheet.create({
 
   titleBox: {
     marginLeft: scale(12),
-    flex:1,
-    alignItems:"center"
+    flex: 1,
+    alignItems: "center"
 
   },
 
@@ -159,21 +199,21 @@ const styles = StyleSheet.create({
     color: '#777',
     marginTop: verticalScale(2),
   },
-  dropdownview:{
-    
-     position: 'absolute',
-  top: verticalScale(55), // adjust according to TargetRole height
-  left: 0,
-  width: '100%',
-  zIndex: 1,
-  elevation: 8,
-  
-    },
-    customsetting:{
-      width:"100%",
-      flexDirection:"row",
-      gap:5
-    }
+  dropdownview: {
+
+    position: 'absolute',
+    top: verticalScale(55), // adjust according to TargetRole height
+    left: 0,
+    width: '100%',
+    zIndex: 1,
+    elevation: 8,
+
+  },
+  customsetting: {
+    width: "100%",
+    flexDirection: "row",
+    gap: 5
+  }
 
 
 });
