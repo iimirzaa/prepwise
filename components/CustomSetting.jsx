@@ -39,6 +39,7 @@ const styles=StyleSheet.create({
         paddingHorizontal:scale(12),
         paddingVertical:verticalScale(10),
         borderRadius:moderateScale(12),
+        marginVertical:verticalScale(5),
         flexDirection:'row',
         justifyContent:"flex-start",
         

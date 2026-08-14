@@ -7,6 +7,8 @@ import InterviewType from '../../../components/InterviewType';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 import TargetRoleContainer from '../../../components/TargetRole';
 import Dropdown from '../../../components/Dropdown';
+import SkillsContainer from '../../../components/Skills';
+import MyButton from '../../../components/Botton';
 const jobs = [
   { title: 'Software Engineer', value: 'software_engineer' },
   { title: 'Frontend Developer', value: 'frontend_developer' },
@@ -64,7 +66,7 @@ const SetupScreen = () => {
   const [showDropdown, setDropdown] = useState(false);
   const [showexpDropdown, setexpDropdown] = useState(false);
   const [showdifDropdown, setdifDropdown] = useState(false);
-  const [selectedJob, setJob] = useState('');
+  const [selectedJob, setJob] = useState( { title: 'Software Engineer', value: 'software_engineer' });
   const [selectedExperience, setExperience] = useState(  { title: 'Student', value: 'student' });
   const [selectedDifficulty, setDifficulty] = useState({ title: 'Easy', value: 'easy' });
   return (
@@ -134,6 +136,8 @@ const SetupScreen = () => {
             </View>
           )}
         </View>
+        <SkillsContainer/>
+        <MyButton text={"Start Interview"}></MyButton>
 
       </View>
     </ScreenWrapper>

@@ -12,7 +12,7 @@ const styles=StyleSheet.create({
     button:{
      backgroundColor:"#6F49F6",
      height:verticalScale(35),
-     width:scale(300),
+     width:'100%',
      marginVertical:verticalScale(10),
      alignItems:"center",
      justifyContent:"center",
