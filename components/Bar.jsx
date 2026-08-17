@@ -14,7 +14,7 @@ const BarBox = ({ title, icon,percentage }) => {
                 </View>
             </View>
             <Text style={styles.percentage}>
-                {percentage}
+                {percentage}{"%"}
             </Text>
         </View>
 
@@ -28,7 +28,9 @@ const styles = StyleSheet.create({
     },
     title: {
         paddingHorizontal: scale(10),
-        width: "100"
+        width: "100",
+        fontWeight:"600",
+        fontSize:moderateScale(12)
 
     },
     bar: {

@@ -2,7 +2,7 @@ import React from 'react';
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import Home from "../screens/appscreens/Home";
 import BottomTabs from '../../components/BottomTabs';
-import  SetupScreen from '../../src/screens/appscreens/Setup';
+import  AttemptInterview from '../../src/screens/appscreens/AttemptInterview';
 
 const Stack =createNativeStackNavigator();
 const AppStack=()=>{
@@ -13,7 +13,10 @@ const AppStack=()=>{
         <Stack.Screen name='MainTabs'component={BottomTabs}> 
             
         </Stack.Screen>
-       
+         <Stack.Screen name="attempt" component={AttemptInterview
+         }>
+
+         </Stack.Screen>
        
        </Stack.Navigator>
 

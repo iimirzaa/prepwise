@@ -11,6 +11,7 @@ import SkillsContainer from '../../../components/Skills';
 import MyButton from '../../../components/Botton';
 import EvaluationContainer from '../../../components/EvaluationInfo';
 import UploadDocuments from '../../../components/QuestionSource';
+import {pick, types} from '@react-native-documents/picker';
 const jobs = [
   { title: 'Software Engineer', value: 'software_engineer' },
   { title: 'Frontend Developer', value: 'frontend_developer' },
@@ -64,13 +65,38 @@ import {
   verticalScale,
 } from 'react-native-size-matters';
 import Overview from '../../../components/InterviewOverview';
-const SetupScreen = () => {
+const SetupScreen = ({navigation}) => {
   const [showDropdown, setDropdown] = useState(false);
   const [showexpDropdown, setexpDropdown] = useState(false);
   const [showdifDropdown, setdifDropdown] = useState(false);
   const [selectedJob, setJob] = useState( { title: 'Software Engineer', value: 'software_engineer' });
   const [selectedExperience, setExperience] = useState(  { title: 'Student', value: 'student' });
   const [selectedDifficulty, setDifficulty] = useState({ title: 'Easy', value: 'easy' });
+  const [resume, setResume] = useState(null);
+  const [JobDescription, setJobDescription] = useState(null);
+  const uploadResume=async()=>{
+    try{
+      const [result]=await pick({type:[types.pdf,types.doc,types.docx]});
+      setResume(result);
+
+    }catch(e){
+      console.log(e);
+    }
+
+  }
+   const uploadJobDescription=async()=>{
+     try{ 
+      const [result]=await pick({type:[types.pdf,types.doc,types.docx]});
+      setJobDescription(result);
+
+
+    }catch(e){
+        console.log(e)
+    }
+  }
+  const handleStartPress=()=>{
+    navigation.replace('attempt');
+  }
   return (
     <ScreenWrapper>
       <View style={styles.container}>
@@ -139,10 +165,10 @@ const SetupScreen = () => {
           )}
         </View>
         <SkillsContainer/>
-        <UploadDocuments/>
+        <UploadDocuments resume={resume}jobDescription={JobDescription} onResumePress={uploadResume}onJobDescriptionPress={uploadJobDescription}/>
         <EvaluationContainer/>
 
-        <MyButton text={"Start Interview"}></MyButton>
+        <MyButton text={"Start Interview"} onPress={handleStartPress}></MyButton>
 
       </View>
     </ScreenWrapper>

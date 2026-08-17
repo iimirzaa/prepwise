@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
 
     marginVertical: verticalScale(5),
 
-    elevation: 5,
+    elevation: 6,
 
     shadowColor: '#000',
     shadowOffset: {
