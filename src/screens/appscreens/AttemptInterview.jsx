@@ -1,94 +1,75 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {View, StyleSheet, Pressable, Text} from 'react-native';
+import React, {useRef, useState, useEffect} from 'react';
+import {View, Text, StyleSheet} from 'react-native';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import {moderateScale, scale, verticalScale} from 'react-native-size-matters';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
-import {
-  Camera,
-  useCameraDevice,
-  useCameraPermission,
-  useMicrophonePermission,
-} from 'react-native-vision-camera';
-import {Circle, Svg} from 'react-native-svg';
+import {Camera, useCameraDevice, useCameraPermission, useMicrophonePermission} from 'react-native-vision-camera';
 import BarBox from '../../../components/Bar';
+import InterviewHeader from '../../../components/InterviewHeader';
+import QuestionCard from '../../../components/Questioncard';
+import RecordingWaveform from '../../../components/Recordingwaveform';
+import MetricsRow from '../../../components/Metricsrow';
+import TipsCard from '../../../components/Tipscard';
+import BottomControls from '../../../components/Bottomcontrols';
 
-const AttemptInterview = () => {
-  const device = useCameraDevice('front');
+const TOTAL_QUESTIONS = 10;
+
+const AttemptInterview = ({navigation}) => {
+  const [cameraPosition, setCameraPosition] = useState('front');
+  const device = useCameraDevice(cameraPosition);
 
   const cameraRef = useRef(null);
 
-  const {
-    hasPermission: hasCameraPermission,
-    requestPermission: requestCameraPermission,
-  } = useCameraPermission();
-
-  const {
-    hasPermission: hasMicrophonePermission,
-    requestPermission: requestMicrophonePermission,
-  } = useMicrophonePermission();
+  const {hasPermission: hasCameraPermission, requestPermission: requestCameraPermission} =
+    useCameraPermission();
+  const {hasPermission: hasMicrophonePermission, requestPermission: requestMicrophonePermission} =
+    useMicrophonePermission();
 
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
+  const [questionIndex, setQuestionIndex] = useState(3);
 
-  const permissionsGranted =
-    hasCameraPermission && hasMicrophonePermission;
 
-  /*
-   * Request camera + microphone permissions
-   */
+  const [metrics, setMetrics] = useState({
+    eyeContact: 81,
+    eyeContactDelta: 6,
+    speakingPace: 138,
+    speakingPaceDelta: 12,
+    fillerWords: 2,
+    fillerWordsDelta: -1,
+    confidence: 'Good',
+    clarity: 'Good',
+  });
+
+  const permissionsGranted = hasCameraPermission && hasMicrophonePermission;
+
   const requestPermissions = async () => {
     try {
-      const cameraPermission = await requestCameraPermission();
-      const microphonePermission = await requestMicrophonePermission();
-
-      console.log('Camera permission:', cameraPermission);
-      console.log('Microphone permission:', microphonePermission);
+      await requestCameraPermission();
+      await requestMicrophonePermission();
     } catch (error) {
       console.error('Permission error:', error);
     }
   };
 
-  /*
-   * Recording timer
-   */
   useEffect(() => {
     let interval;
 
     if (isRecording) {
-      interval = setInterval(() => {
-        setRecordingTime(prev => prev + 1);
-      }, 1000);
+      interval = setInterval(() => setRecordingTime(prev => prev + 1), 1000);
     }
 
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
+    return () => interval && clearInterval(interval);
   }, [isRecording]);
 
-  /*
-   * Format seconds into MM:SS
-   */
   const formatTime = seconds => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-
-    return `${String(minutes).padStart(2, '0')}:${String(
-      remainingSeconds,
-    ).padStart(2, '0')}`;
+    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
   };
 
-  /*
-   * Start recording
-   */
   const startRecording = () => {
-    if (!cameraRef.current) {
-      console.log('Camera ref is not ready');
-      return;
-    }
-
-    if (isRecording) {
+    if (!cameraRef.current || isRecording) {
       return;
     }
 
@@ -98,15 +79,11 @@ const AttemptInterview = () => {
     try {
       cameraRef.current.startRecording({
         onRecordingFinished: video => {
-          console.log('Recording finished');
-          console.log('Video path:', video.path);
-
+          console.log('Recording finished:', video.path);
           setIsRecording(false);
         },
-
         onRecordingError: error => {
           console.error('Recording error:', error);
-
           setIsRecording(false);
         },
       });
@@ -116,9 +93,6 @@ const AttemptInterview = () => {
     }
   };
 
-  /*
-   * Stop recording
-   */
   const stopRecording = async () => {
     if (!cameraRef.current || !isRecording) {
       return;
@@ -132,153 +106,84 @@ const AttemptInterview = () => {
     }
   };
 
-  /*
-   * Waiting for permissions
-   */
+  const handleToggleRecord = () => (isRecording ? stopRecording() : startRecording());
+
+  const handleFlipCamera = () => setCameraPosition(prev => (prev === 'front' ? 'back' : 'front'));
+
+  const handleSkip = () => {
+    if (isRecording) {
+      stopRecording();
+    }
+    setQuestionIndex(prev => Math.min(prev + 1, TOTAL_QUESTIONS));
+  };
+
+  const handleEndInterview = () => {
+    if (isRecording) {
+      stopRecording();
+    }
+    navigation.goBack('home');
+  };
+
+  const handleHint = () => {
+   
+  };
+
   if (!permissionsGranted) {
     return (
       <ScreenWrapper>
         <View style={styles.centerContainer}>
           <View style={styles.permissionIconWrap}>
-            <MaterialDesignIcons
-              name="camera-off"
-              size={moderateScale(36)}
-              color="#7B61E0"
-            />
+            <MaterialDesignIcons name="camera-off" size={moderateScale(36)} color="#7B61E0" />
           </View>
 
-          <Text style={styles.permissionTitle}>
-            Camera & Microphone Access
-          </Text>
+          <Text style={styles.permissionTitle}>Camera & Microphone Access</Text>
 
           <Text style={styles.permissionSubtitle}>
-            We need access to your camera and mic to record your practice
-            interview.
+            We need access to your camera and mic to record your practice interview.
           </Text>
 
-          <Pressable
-            style={styles.permissionButton}
-            onPress={requestPermissions}>
-            <Text style={styles.permissionButtonText}>Allow Access</Text>
-          </Pressable>
+          <Text style={styles.permissionButton} onPress={requestPermissions}>
+            Allow Access
+          </Text>
         </View>
       </ScreenWrapper>
     );
   }
 
-  /*
-   * Device not available
-   */
   if (!device) {
     return (
       <ScreenWrapper>
         <View style={styles.centerContainer}>
-          <MaterialDesignIcons
-            name="camera-off"
-            size={moderateScale(40)}
-            color="#7B61E0"
-          />
-
-          <Text style={styles.permissionTitle}>
-            Camera Not Available
-          </Text>
-
-          <Text style={styles.permissionSubtitle}>
-            No front camera was found on this device.
-          </Text>
+          <MaterialDesignIcons name="camera-off" size={moderateScale(40)} color="#7B61E0" />
+          <Text style={styles.permissionTitle}>Camera Not Available</Text>
+          <Text style={styles.permissionSubtitle}>No {cameraPosition} camera was found on this device.</Text>
         </View>
       </ScreenWrapper>
     );
   }
 
-  /*
-   * Main interview screen
-   */
   return (
     <ScreenWrapper>
       <View style={styles.container}>
-
-        {/* Header */}
-        <View style={styles.header}>
-
-          {/* Back */}
-          <Pressable style={styles.backButton}>
-            <MaterialDesignIcons
-              name="arrow-left"
-              size={moderateScale(22)}
-              color="black"
-            />
-          </Pressable>
-
-          {/* Title */}
-          <View style={styles.titleBox}>
-            <Text style={styles.title}>
-              React Native Interview
-            </Text>
-
-            {isRecording && (
-              <View style={styles.recordingContainer}>
-                <Svg width={10} height={10}>
-                  <Circle
-                    cx="5"
-                    cy="5"
-                    r="5"
-                    fill="red"
-                  />
-                </Svg>
-
-                <Text style={styles.subtitle}>
-                  Recording {formatTime(recordingTime)}
-                </Text>
-              </View>
-            )}
-          </View>
-
-          {/* Stop button */}
-          {isRecording && (
-            <Pressable
-              style={styles.stopbtncontainer}
-              onPress={stopRecording}>
-
-              <View style={styles.stopbtn}>
-                <MaterialDesignIcons
-                  name="stop"
-                  size={20}
-                  color="red"
-                />
-
-                <Text style={styles.stopText}>
-                  Stop
-                </Text>
-              </View>
-
-            </Pressable>
-          )}
-        </View>
-
-        {/* Question progress */}
-        <BarBox
-          icon="help-circle"
-          title="Question 3 of 10"
-          percentage="30"
+        <InterviewHeader
+          title="Mixed Interview"
+          isRecording={isRecording}
+          recordingTime={formatTime(recordingTime)}
+          onBack={() => navigation?.goBack?.()}
+          onEnd={handleEndInterview}
         />
 
-        {/* Interview type */}
-        <View style={styles.interviewtype}>
-          <MaterialDesignIcons
-            name="account"
-            size={moderateScale(22)}
-            color="black"
+        <View style={styles.progressWrap}>
+          <BarBox
+            icon="help-circle"
+            title={`Question ${questionIndex} of ${TOTAL_QUESTIONS}`}
+            percentage={String(Math.round((questionIndex / TOTAL_QUESTIONS) * 100))}
           />
-
-          <Text style={styles.type}>
-            Custom
-          </Text>
         </View>
 
-        {/* Camera */}
-        <View style={styles.cameraContainer}>
+        <QuestionCard type="Behavioral" question="Tell me about a time you faced a challenge in a project. How did you handle it and what was the result?" />
 
+        <View style={styles.cameraContainer}>
           <Camera
             ref={cameraRef}
             style={styles.camera}
@@ -288,27 +193,29 @@ const AttemptInterview = () => {
             audio={true}
           />
 
-          {/* Start recording button */}
-          {!isRecording && (
-            <View style={styles.startButtonContainer}>
-              <Pressable
-                style={styles.startButton}
-                onPress={startRecording}>
+          <RecordingWaveform isRecording={isRecording} onFlipCamera={handleFlipCamera} />
+        </View>
 
-                <MaterialDesignIcons
-                  name="record"
-                  size={moderateScale(24)}
-                  color="white"
-                />
+        <View style={styles.metricsWrap}>
+          <MetricsRow metrics={metrics} />
+        </View>
 
-                <Text style={styles.startButtonText}>
-                  Start Recording
-                </Text>
+        <View style={styles.tipsWrap}>
+          <TipsCard onViewExample={() => {}} />
+        </View>
 
-              </Pressable>
-            </View>
-          )}
+        <View style={styles.controlsWrap}>
+          <BottomControls
+            isRecording={isRecording}
+            onSkip={handleSkip}
+            onToggleRecord={handleToggleRecord}
+            onHint={handleHint}
+          />
+        </View>
 
+        <View style={styles.footerRow}>
+          <MaterialDesignIcons name="lock-outline" size={moderateScale(11)} color="#999" />
+          <Text style={styles.footerText}>Your answers are recorded & analyzed securely</Text>
         </View>
       </View>
     </ScreenWrapper>
@@ -320,7 +227,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
   },
-
   centerContainer: {
     flex: 1,
     width: '100%',
@@ -328,7 +234,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: scale(30),
   },
-
   permissionIconWrap: {
     width: moderateScale(70),
     height: moderateScale(70),
@@ -338,7 +243,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: verticalScale(16),
   },
-
   permissionTitle: {
     fontSize: moderateScale(17),
     fontWeight: '700',
@@ -346,7 +250,6 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(8),
     textAlign: 'center',
   },
-
   permissionSubtitle: {
     fontSize: moderateScale(13),
     color: '#777',
@@ -354,141 +257,48 @@ const styles = StyleSheet.create({
     lineHeight: moderateScale(18),
     marginBottom: verticalScale(20),
   },
-
   permissionButton: {
     backgroundColor: '#7B61E0',
+    color: 'white',
+    fontWeight: '600',
+    fontSize: moderateScale(14),
     paddingVertical: verticalScale(12),
     paddingHorizontal: scale(28),
     borderRadius: moderateScale(24),
-    elevation: 4,
-  },
-
-  permissionButtonText: {
-    color: 'white',
-    fontWeight: '600',
-    fontSize: moderateScale(14),
-  },
-
-  header: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-
-  backButton: {
-    height: moderateScale(30),
-    width: moderateScale(30),
-    borderRadius: moderateScale(15),
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.12,
-    shadowRadius: 4,
-  },
-
-  titleBox: {
-    marginLeft: scale(12),
-    flex: 1,
-    alignItems: 'center',
-  },
-
-  title: {
-    fontSize: moderateScale(18),
-    fontWeight: '700',
-    color: '#222',
-  },
-
-  recordingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-
-  subtitle: {
-    fontSize: moderateScale(12),
-    color: '#777',
-    marginTop: verticalScale(2),
-  },
-
-  stopbtncontainer: {
-    backgroundColor: 'white',
-    borderRadius: moderateScale(12),
-    padding: moderateScale(8),
-    elevation: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  stopbtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-  },
-
-  stopText: {
-    color: '#222',
-    fontSize: moderateScale(12),
-  },
-
-  interviewtype: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    width: '100%',
-    backgroundColor: '#D1C9ED',
-    marginVertical: verticalScale(5),
-    paddingHorizontal: scale(5),
-    paddingVertical: verticalScale(5),
-    borderRadius: moderateScale(10),
-  },
-
-  type: {
-    paddingLeft: scale(5),
-  },
-
-  cameraContainer: {
-    height:verticalScale(300),
     overflow: 'hidden',
-    borderRadius: moderateScale(12),
-    position: 'relative',
   },
-
+  progressWrap: {
+    marginTop: verticalScale(10),
+  },
+  cameraContainer: {
+    height: verticalScale(230),
+    borderRadius: moderateScale(14),
+    overflow: 'hidden',
+    marginTop: verticalScale(10),
+  },
   camera: {
     flex: 1,
   },
-
-  startButtonContainer: {
-    position: 'absolute',
-    bottom: verticalScale(25),
-    left: 0,
-    right: 0,
-    alignItems: 'center',
+  metricsWrap: {
+    marginTop: verticalScale(10),
   },
-
-  startButton: {
+  tipsWrap: {
+    marginTop: verticalScale(10),
+  },
+  controlsWrap: {
+    marginTop: verticalScale(14),
+  },
+  footerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#7B61E0',
-    paddingVertical: verticalScale(12),
-    paddingHorizontal: scale(25),
-    borderRadius: moderateScale(30),
-    elevation: 5,
+    marginTop: verticalScale(10),
+    marginBottom: verticalScale(6),
   },
-
-  startButtonText: {
-    color: 'white',
-    fontSize: moderateScale(14),
-    fontWeight: '600',
-    marginLeft: scale(8),
+  footerText: {
+    fontSize: moderateScale(10),
+    color: '#999',
+    marginLeft: scale(4),
   },
 });
 
