@@ -121,7 +121,7 @@ const AttemptInterview = ({navigation}) => {
     if (isRecording) {
       stopRecording();
     }
-    navigation.goBack('home');
+    navigation.navigate('Home');
   };
 
   const handleHint = () => {
