@@ -1,97 +1,63 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Prepwise
 
-# Getting Started
+Prepwise is an AI-powered interview and viva preparation coach that helps students practice answering interview and viva questions, then get instant, structured feedback on what they said and how they said it.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Overview
 
-## Step 1: Start Metro
+Students record themselves answering common interview or viva questions. Prepwise analyzes the response using AI — evaluating the content of the answer, how it was delivered (pacing, filler words), and body language (eye contact, posture) — then returns actionable feedback so students can improve before the real thing.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Functionalities
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- **Practice Recording**
+  Record video/audio responses to common interview and viva questions directly in the app.
 
-```sh
-# Using npm
-npm start
+- **AI Content Feedback**
+  Gemini-powered analysis evaluates the substance of an answer — relevance, clarity, and completeness — and suggests improvements.
 
-# OR using Yarn
-yarn start
-```
+- **Speech Analysis**
+  Detects filler words ("um," "like," etc.) and evaluates speaking pace, flagging sections that were rushed or dragged.
 
-## Step 2: Build and run your app
+- **Body Language Analysis**
+  Uses pose/face tracking to assess eye contact and posture during the recorded response, surfacing non-verbal cues that affect interview performance.
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+- **Structured Feedback Reports**
+  Consolidates content, speech, and body language scores into a single, easy-to-read report per practice session.
 
-### Android
+- **Progress Tracking**
+  Keeps a history of past practice sessions and scores so students can see improvement over time.
 
-```sh
-# Using npm
-npm run android
+- **Onboarding Flow**
+  Guided onboarding screens that introduce the app's features before account creation.
 
-# OR using Yarn
-yarn android
-```
+- **Authentication**
+  Secure sign-up/login with JWT-based auth; every user's data and session history is tracked on the backend (not just stored client-side).
 
-### iOS
+- **Modern Animated UI**
+  Clean, minimal, fully animated interface built for a smooth mobile experience across onboarding, auth, and practice flows.
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+## Tech Stack
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+**Frontend**
+- React Native
+- react-native-linear-gradient (theming/animated gradients)
 
-```sh
-bundle install
-```
+**Backend**
+- Node.js / Express
+- Firestore (user records, session history)
+- JWT authentication
 
-Then, and every time you update your native dependencies, run:
+**AI / Analysis**
+- Google Gemini (content feedback)
+- Speech analysis (filler word detection, pacing)
+- Pose/face tracking (eye contact, posture analysis)
 
-```sh
-bundle exec pod install
-```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
 
-```sh
-# Using npm
-npm run ios
 
-# OR using Yarn
-yarn ios
-```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+## Roadmap
 
-## Step 3: Modify your app
+- [ ] Question bank tailored by field of study
+- [ ] Exportable feedback reports (PDF)
 
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
