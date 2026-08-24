@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
 
-    backgroundColor: '#F8F6FB',
+    backgroundColor: '#F5F5F5',
 
     borderRadius: moderateScale(10),
 
@@ -45,6 +45,8 @@ const styles = StyleSheet.create({
     paddingVertical: verticalScale(7),
 
     minWidth: scale(85),
+    borderColor:"#CDCBCB",
+    borderWidth:moderateScale(1)
   },
 
   textContainer: {
