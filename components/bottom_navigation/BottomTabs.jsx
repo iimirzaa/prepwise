@@ -5,6 +5,7 @@ import MaterialDesignIcons from '@react-native-vector-icons/material-design-icon
 import HomeScreen from '../../src/screens/appscreens/Home';
 import SetupScreen from '../../src/screens/appscreens/Setup';
 import Report from '../../src/screens/appscreens/Report';
+import Profile from '../../src/screens/appscreens/Profile';
 
 
 const Tab = createBottomTabNavigator();
@@ -53,6 +54,7 @@ const BottomTabs = () => {
       <Tab.Screen name="Home" component={HomeScreen} />
        <Tab.Screen name="Practice" component={SetupScreen} />
       <Tab.Screen name="Report" component={Report} />
+      <Tab.Screen name='Profile' component={Profile}/>
     
      
 
