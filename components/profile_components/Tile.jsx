@@ -7,9 +7,9 @@ import {
   verticalScale,
 } from 'react-native-size-matters';
 
-const Tile = ({ icon, text }) => {
+const Tile = ({ icon, text,onpress }) => {
   return (
-    <Pressable style={styles.tile}>
+    <Pressable style={styles.tile} onPress={onpress}>
 
       {/* Left Side */}
       <View style={styles.iconBar}>

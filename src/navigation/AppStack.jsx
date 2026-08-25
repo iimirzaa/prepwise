@@ -2,6 +2,7 @@ import React from 'react';
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import BottomTabs from '../../components/bottom_navigation/BottomTabs';
 import  AttemptInterview from '../../src/screens/appscreens/AttemptInterview';
+import ProfileInfo from '../screens/appscreens/PersonalInfo';
 
 const Stack =createNativeStackNavigator();
 const AppStack=()=>{
@@ -15,7 +16,9 @@ const AppStack=()=>{
          <Stack.Screen name="attempt" component={AttemptInterview
          }>
 
+
          </Stack.Screen>
+         <Stack.Screen name='info' component={ProfileInfo}/>
        
        </Stack.Navigator>
 

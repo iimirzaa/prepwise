@@ -5,14 +5,18 @@ import Header from '../../../components/profile_components/Header';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import Tile from '../../../components/profile_components/Tile';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
-const profileItems = [
+
+const Profile = ({navigation}) => {
+    const profileItems = [
     {
         title: 'Personal Information',
         icon: 'account-outline',
+        press:()=>navigation.navigate('info')
     },
     {
         title: 'Interview Preferences',
         icon: 'tune-variant',
+        
     },
     {
         title: 'Practice History',
@@ -27,7 +31,6 @@ const profileItems = [
         icon: 'help-circle-outline',
     },
 ];
-const Profile = () => {
     return (
         <ScreenWrapper>
             <View style={styles.container}>
@@ -38,7 +41,7 @@ const Profile = () => {
                     {
                         profileItems.map((item) => {
                             return (
-                                <Tile key={item.title} icon={item.icon} text={item.title} />
+                                <Tile key={item.title} icon={item.icon} text={item.title} onpress={item.press} />
 
                             );
                         })
