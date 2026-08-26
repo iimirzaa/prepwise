@@ -5,6 +5,7 @@
 # Xcode
 #
 /backend/src/.env
+/backend/src/node_modules
 build/
 *.pbxuser
 !default.pbxuser
