@@ -8,7 +8,7 @@ const fileFilter = (levelToKeep) => {
 };
 
 const Logger = winston.createLogger({
-    level: "info",
+    level: "debug",
     levels: winston.config.npm.levels,
     format: winston.format.combine(
         winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -36,7 +36,7 @@ const Logger = winston.createLogger({
         }),
         // 4. Error File: Receives ONLY error logs
         new winston.transports.File({ 
-            filename: '../logs/error.log', 
+            filename: './logs/error.log', 
             level: 'error',
             format: winston.format.combine(fileFilter('error'), winston.format.json(),winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }))
         }),
