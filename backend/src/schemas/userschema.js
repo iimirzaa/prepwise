@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { boolean } from "zod";
 
 const userSchema = new mongoose.Schema(
     {
@@ -23,6 +24,10 @@ const userSchema = new mongoose.Schema(
             required: true,
             minlength: 6,
             select: false // won't be returned in queries by default
+        },
+        isVerified:{
+            type:Boolean,
+            default:false
         }
     },
     { timestamps: true }
