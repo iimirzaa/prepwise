@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginHorizontal:scale(20)
+    // marginHorizontal:scale(20)
 
   },
  

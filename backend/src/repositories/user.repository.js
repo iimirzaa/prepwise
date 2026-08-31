@@ -4,5 +4,6 @@ const userRepository={
     findById:(id)=>User.findById({id}).select('-password'),
     create:(data)=>User.create(data)
     
+    
 };
 export default userRepository;

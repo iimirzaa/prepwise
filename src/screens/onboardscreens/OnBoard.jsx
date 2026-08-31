@@ -61,14 +61,15 @@ const OnBoard = ({ navigation }) => {
 
   return (
     <ScreenWrapper>
-      <View style={styles.wrapper}>
-        <View style={styles.skipwrapper}>
+      <View style={styles.skipwrapper}>
           <Curve />
 
           <Pressable style={styles.skipbtn} onPress={handleSkip}>
             <Text style={styles.skiptxt}>Skip</Text>
           </Pressable>
         </View>
+      <View style={styles.wrapper}>
+        
 
         <View style={styles.imgwrapper}>
           <Image
@@ -99,16 +100,19 @@ const OnBoard = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   wrapper: {
+    width:"100%",
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    paddingHorizontal: moderateScale(20),
+    paddingHorizontal:scale(20)
+
   },
 
   skipwrapper: {
     width: "100%",
     height: verticalScale(100),
     position: "relative",
+   
   },
 
   skipbtn: {

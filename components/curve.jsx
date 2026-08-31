@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dimensions, StyleSheet } from 'react-native';
+import { moderateScale } from 'react-native-size-matters';
 import Svg, { Path } from "react-native-svg";
 
 const { width } = Dimensions.get("window");
@@ -23,7 +24,8 @@ const Curve = () => {
 const styles = StyleSheet.create({
   curve: {
     height: 100,
-    width: width,
+    width: "100%",
+    
   }
 });
 

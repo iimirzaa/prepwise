@@ -14,6 +14,7 @@ const Home= ({navigation})=>{
    
    return ( 
      <ScreenWrapper>
+      <View style={styles.wrapper}>
       <View style={styles.headerWrapper}>
         <View style={styles.textContainer}>
           <Text style={styles.greetingText}>
@@ -38,6 +39,7 @@ const Home= ({navigation})=>{
  
       </View>
       <Breakdown/>
+      </View>
       
      </ScreenWrapper>
      
@@ -45,6 +47,12 @@ const Home= ({navigation})=>{
 }
 
 const styles=StyleSheet.create({
+  wrapper:{
+    flex:1,
+    width:"100%",
+    paddingHorizontal:scale(10)
+
+  },
   headerWrapper:{
     flexDirection:"row",
     justifyContent:"space-between", 

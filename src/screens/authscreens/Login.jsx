@@ -97,6 +97,7 @@ const Login = ({navigation}) => {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
+    width:"100%",
     justifyContent: "flex-start",
     alignItems: "flex-start",
     paddingHorizontal: moderateScale(20),
@@ -151,7 +152,7 @@ const styles = StyleSheet.create({
   },
 
   inputContainer: {
-    width: scale(300),
+    width:"100%",
     height: verticalScale(35),
     backgroundColor: "#FFFFFF",
     borderWidth: 1,
@@ -162,14 +163,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: verticalScale(10),
 
-    // Shadow (iOS)
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-
-    // Shadow (Android)
-    elevation: 2,
+    
   },
 
   input: {
