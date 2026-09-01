@@ -87,7 +87,7 @@ export const validateConfirmPassword = (
 
   return null;
 };
-export const validateOt = (otp) => {
+export const validateOtp = (otp) => {
   if (!otp || otp.trim() === '') {
     return 'OTP is required';
   }

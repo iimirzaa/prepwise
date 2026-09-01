@@ -1,12 +1,15 @@
-import React from 'react';
+import React,{useState} from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import Header from '../../../components/profile_components/Header';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import Tile from '../../../components/profile_components/Tile';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
+import { clearTokens, getRefreshToken } from '../../storage/authstorage';
+import { authService } from '../../services/auth.service';
 
 const Profile = ({navigation}) => {
+      const [isLoading, setIsLoading] = useState(false);
     const profileItems = [
     {
         title: 'Personal Information',
@@ -31,6 +34,27 @@ const Profile = ({navigation}) => {
         icon: 'help-circle-outline',
     },
 ];
+const handleLogout=async()=>{
+    const token=await getRefreshToken();
+    try {
+          const response = await authService.logout(
+           token
+          );
+          await clearTokens();
+
+    
+        } catch (error) {
+          setPasswordError(error.response?.data.message);
+          console.log('SIGNUP ERROR:', error);
+          console.log('MESSAGE:', error.message);
+          console.log('CODE:', error.code);
+          console.log('STATUS:', error.response?.status);
+          console.log('DATA:', error.response?.data);
+        } finally {
+          setIsLoading(false);
+        }
+
+};
     return (
         <ScreenWrapper>
             <View style={styles.container}>
@@ -49,7 +73,7 @@ const Profile = ({navigation}) => {
 
 
                 </View>
-                <Pressable style={styles.logoutButton}>
+                <Pressable style={styles.logoutButton} onpress={handleLogout}>
                     <MaterialDesignIcons
                         name="logout-variant"
                         size={moderateScale(20)}
@@ -68,7 +92,8 @@ const Profile = ({navigation}) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        width: '100%'
+        width: '100%',
+        paddingHorizontal:scale(10)
 
     },
     headerbox: {

@@ -7,5 +7,11 @@ export const authService={
     async  verifyOtp(email,otp){
         return apiClient.post(END_POINTS.Auth.Verify,{email,otp});
     },
+     async  login(email,password){
+        return apiClient.post(END_POINTS.Auth.Login,{email,password});
+    },
+    async  logout(token){
+        return apiClient.post(END_POINTS.Auth.Logout,{token});
+    },
 
 }

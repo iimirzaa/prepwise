@@ -17,7 +17,7 @@ const VerifyOtp = ({ navigation, route }) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // measured screen position/size of Otpbox, used to place the Modal overlay exactly on top of it
+
   const boxRef = useRef(null);
   const [boxLayout, setBoxLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
 
@@ -40,7 +40,7 @@ const VerifyOtp = ({ navigation, route }) => {
       return;
     }
 
-    const otpError = validateOtp(otp);
+    const otpError = validateOtp(otp.toString());
     if (otpError) {
       setotpError(otpError);
       return;
@@ -136,9 +136,7 @@ const VerifyOtp = ({ navigation, route }) => {
 
       </View>
 
-      {/* Rendered via Modal so it can NEVER add to Otpbox's layout/height.
-          Positioned using the box's measured on-screen coordinates, so it
-          sits exactly centered over the box regardless of content size. */}
+    
       <Modal
         visible={isLoading}
         transparent
@@ -156,7 +154,7 @@ const VerifyOtp = ({ navigation, route }) => {
             },
           ]}
         >
-          <Loader />
+          <Loader title={"Verifying..."} />
         </View>
       </Modal>
     </ScreenWrapper>

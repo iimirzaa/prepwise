@@ -1,15 +1,20 @@
 import React from "react";
-import { View } from "react-native";
+import { View, ActivityIndicator } from "react-native";
 import AuthStack from './AuthStack';
 import AppStack from './AppStack';
+import { useAuth } from '../Utils/authcontext'; // adjust path
 
-const RootNavigator=()=>{
-     const isLoggedIn = false;
-     const ok=false;
+const RootNavigator = () => {
+  const { isLoggedIn, isReady } = useAuth();
 
-    return isLoggedIn
-        ? <AppStack />
-        : <AuthStack />;
-    
-}
+  if (!isReady) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' ,backgroundColor:"white"}}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  return isLoggedIn ? <AppStack /> : <AuthStack />;
+};
 export default RootNavigator;
