@@ -13,5 +13,11 @@ export const authService={
     async  logout(token){
         return apiClient.post(END_POINTS.Auth.Logout,{token});
     },
+    async sendOtp(email){
+        return apiClient.post(END_POINTS.Auth.Send,{email});
+    },
+    async changePassword(email,otp,password){
+        return apiClient.post(END_POINTS.Auth.change,{email,otp,password});
+    }
 
 }

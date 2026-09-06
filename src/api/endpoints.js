@@ -5,6 +5,7 @@ export const END_POINTS={
         Refresh:'/auth/refresh',
         Verify:'/auth/verifyotp',
         Send:'/auth/sendotp',
-        Logout:'/auth/logout'
+        Logout:'/auth/logout',
+        change:'/auth/changepassword'
     }
 }

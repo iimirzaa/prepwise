@@ -106,7 +106,7 @@ const authService = {
                 const { exp } = jwt.decode(refreshToken);
                 const refreshHash = await hashToken(refreshToken);
                 await tokenRepository.create({
-                    _id:tokenId,
+                    _id: tokenId,
                     userId: user.id,
                     tokenHash: refreshHash,
                     expiresAt: new Date(exp * 1000),
@@ -120,6 +120,14 @@ const authService = {
                     access: accessToken,
                     refresh: refreshToken
                 };
+            } else {
+                return {
+                    success: false,
+                    status: 401,
+                    message: "Incorrect Password.",
+
+                };
+
             }
         }
 
@@ -144,7 +152,7 @@ const authService = {
             };
         }
 
-        const user = await userRepository.findById(decoded.id).select("+tokenHash +expiresAt");
+        const user = await tokenRepository.findById(decoded.id).select("+tokenHash +expiresAt");
 
         if (!user) {
             return {
@@ -170,9 +178,11 @@ const authService = {
             };
         }
 
+        const tokenId = new mongoose.Types.ObjectId();
+
         const payload = { id: user.id, username: user.fullname, email: user.email };
         const newAccessToken = generateAccessToken(payload);
-        const newRefreshToken = generateRefreshToken(payload);
+        const newRefreshToken = generateRefreshToken({ ...payload, jti: tokenId.toString() });
 
         user.tokenHash = hashToken(newRefreshToken);
         user.expiresAt = new Date(jwt.decode(newRefreshToken).exp * 1000);
@@ -200,7 +210,7 @@ const authService = {
             return { success: false, status: 401, message: "Invalid or expired refresh token." };
         }
 
-        // find candidate token doc(s) for this user, not yet revoked
+
         const tokenDoc = await tokenRepository.findOne({ _id: decoded.jti, revoked: false });
         console.log(tokenDoc)
 
@@ -212,14 +222,122 @@ const authService = {
             };
         }
 
-        tokenDoc.revoked = true;
-        await tokenDoc.save();
+        await tokenDoc.updateOne({ revoked: true });
 
         return {
             success: true,
             status: 200,
             message: "Logged out successfully.",
         };
-    }
+    },
+    async sendOtp({ email }) {
+        const user = await userRepository.findByEmail(email);
+        if (!user) {
+            return {
+                success: false,
+                status: 404,
+                message: "No account found.",
+            };
+        }
+
+        if (!user.isVerified) {
+            return {
+                success: false,
+                status: 403,
+                message: "Please verify your email.",
+            };
+        }
+        return await requestOtp(email);
+    },
+    async changePassword({ email, otp, password }) {
+
+        const user = await userRepository.findByEmail(email);
+
+        if (!user) {
+            return {
+                success: false,
+                status: 404,
+                message: "No account found.",
+            };
+        }
+
+        const response = await verifyUserOtp(email, otp);
+
+        if (response.success !== true) {
+            return response;
+        }
+
+        const hashedPassword = await hashPassword(password);
+
+        // Transaction should start here
+        const session = await mongoose.startSession();
+
+        try {
+            session.startTransaction();
+
+            await userRepository.updatePasswordByEmail(
+                email,
+                hashedPassword,
+                { session }
+            );
+
+            await tokenRepository.deleteAllByUserId(
+                user._id,
+                { session }
+            );
+
+            if (!user.isVerified) {
+                await userRepository.markAsVerified(
+                    user._id,
+                    { session }
+                );
+            }
+
+            await session.commitTransaction();
+
+            return {
+                success: true,
+                status: 200,
+                message: "Password changed successfully.",
+            };
+
+        } catch (error) {
+
+            await session.abortTransaction();
+
+            throw error;
+
+        } finally {
+            session.endSession();
+        }
+    },
+    async verifyOtp({ email, otp }) {
+        const user = await userRepository.findByEmail(email);
+
+        if (!user) {
+            return {
+                success: false,
+                status: 404,
+                message: "No account found with this email.",
+            };
+        }
+
+
+
+        const response = await verifyUserOtp(email, otp);
+
+        if (response.success !== true) {
+
+            return response;
+        }
+
+        await user.updateOne({ isVerified: true });
+
+        return {
+            success: true,
+            status: 200,
+            message: "Account verified successfully.",
+        };
+    },
 }
 export default authService;

@@ -70,6 +70,48 @@ const authController = {
             return res.status(501).json({ success: false, message: "Internal Server Error" });
 
         }
+    },
+     async sendOtp(req, res) {
+
+        try {
+            Logger.debug("Otp Request", req.body);
+            const response = await authService.sendOtp(req.body);
+            return res.status(response.status).json({ success: response.success, message: response.message, access: response.access, refresh: response.refresh });
+            console.log(response);
+
+
+        } catch (e) {
+            Logger.error("Error in Otp controller", e);
+            return res.status(501).json({ success: false, message: "Internal Server Error" });
+
+        }
+    },
+     async verifyOtp(req, res) {
+        try {
+            Logger.debug("OTP VERIFY Request", req.body);
+            const response = await authService.verifyOtp(req.body);
+            return res.status(response.status).json({ success: response.success, message: response.message });
+
+
+        } catch (e) {
+            Logger.error("Error in verify Otp controller", e);
+            return res.status(501).json({ success: false, message: "Internal Server Error" });
+
+        }
+
+    },
+    async changePassword(req, res) {
+
+        try {
+            Logger.debug("Change Password Request", req.body);
+            const response = await authService.changePassword(req.body);
+            return res.status(response.status).json({ success: response.success, message: response.message, access: response.access, refresh: response.refresh });
+        
+        } catch (e) {
+            Logger.error("Error in Password controller", e);
+            return res.status(501).json({ success: false, message: "Internal Server Error" });
+
+        }
     }
 
 }
