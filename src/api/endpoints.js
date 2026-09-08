@@ -7,5 +7,8 @@ export const END_POINTS={
         Send:'/auth/sendotp',
         Logout:'/auth/logout',
         change:'/auth/changepassword'
+    },
+    profile:{
+        info:'profile/me'
     }
 }

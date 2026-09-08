@@ -28,7 +28,8 @@ const userSchema = new mongoose.Schema(
         isVerified:{
             type:Boolean,
             default:false
-        }
+        },
+        tokenVersion: { type: Number, default: 0 }
     },
     { timestamps: true }
 );

@@ -79,122 +79,157 @@ const authService = {
         };
     },
     async login({ email, password }) {
-        const user = await userRepository.findByEmail(email).select("+password");
+    const user = await userRepository.findByEmail(email).select("+password");
 
-        if (!user) {
-            return {
-                success: false,
-                status: 404,
-                message: "No account found with this email.",
-            };
-        }
-        if (!user.isVerified) {
-            return {
-                success: false,
-                status: 404,
-                message: "Please verify your email.",
-            };
-        }
-        if (user.isVerified) {
-            if (await verifyPassword(user.password, password)) {
-                const tokenId = new mongoose.Types.ObjectId();
-
-                const payload = { id: user.id, username: user.fullname, email: user.email };
-                const accessToken = generateAccessToken(payload);
-                const refreshToken = generateRefreshToken({ ...payload, jti: tokenId.toString() });
-
-                const { exp } = jwt.decode(refreshToken);
-                const refreshHash = await hashToken(refreshToken);
-                await tokenRepository.create({
-                    _id: tokenId,
-                    userId: user.id,
-                    tokenHash: refreshHash,
-                    expiresAt: new Date(exp * 1000),
-
-                });
-
-                return {
-                    success: true,
-                    status: 200,
-                    message: "Login Successful.",
-                    access: accessToken,
-                    refresh: refreshToken
-                };
-            } else {
-                return {
-                    success: false,
-                    status: 401,
-                    message: "Incorrect Password.",
-
-                };
-
-            }
-        }
-
-    },
-    async refresh({ token }) {
-        if (!token) {
-            return {
-                success: false,
-                status: 401,
-                message: "No refresh token provided.",
-            };
-        }
-
-        let decoded;
-        try {
-            decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
-        } catch (e) {
-            return {
-                success: false,
-                status: 401,
-                message: "Invalid or expired refresh token.",
-            };
-        }
-
-        const user = await tokenRepository.findById(decoded.id).select("+tokenHash +expiresAt");
-
-        if (!user) {
-            return {
-                success: false,
-                status: 404,
-                message: "No account found.",
-            };
-        }
-
-        if (!user.tokenHash || await verifyToken(user.tokenHash, token)) {
-            return {
-                success: false,
-                status: 401,
-                message: "Refresh token not recognized. Please log in again.",
-            };
-        }
-
-        if (user.expiresAt < new Date()) {
-            return {
-                success: false,
-                status: 401,
-                message: "Refresh token expired. Please log in again.",
-            };
-        }
-
-        const tokenId = new mongoose.Types.ObjectId();
-
-        const payload = { id: user.id, username: user.fullname, email: user.email };
-        const newAccessToken = generateAccessToken(payload);
-        const newRefreshToken = generateRefreshToken({ ...payload, jti: tokenId.toString() });
-
-        user.tokenHash = hashToken(newRefreshToken);
-        user.expiresAt = new Date(jwt.decode(newRefreshToken).exp * 1000);
-        await user.save();
-
+    if (!user) {
         return {
-            success: true,
-            status: 200,
-            access: newAccessToken,
-            refresh: newRefreshToken,
+            success: false,
+            status: 404,
+            message: "No account found with this email.",
         };
-    },
+    }
+    if (!user.isVerified) {
+        return {
+            success: false,
+            status: 404,
+            message: "Please verify your email.",
+        };
+    }
+    if (user.isVerified) {
+        if (await verifyPassword(user.password, password)) {
+            const tokenId = new mongoose.Types.ObjectId();
+
+         
+            const payload = {
+                id: user.id,
+                username: user.fullname,
+                email: user.email,
+                tokenVersion: user.tokenVersion,
+            };
+            const accessToken = generateAccessToken(payload);
+            const refreshToken = generateRefreshToken({ ...payload, jti: tokenId.toString() });
+
+            const { exp } = jwt.decode(refreshToken);
+            const refreshHash = await hashToken(refreshToken);
+            await tokenRepository.create({
+                _id: tokenId,
+                userId: user.id,
+                tokenHash: refreshHash,
+                expiresAt: new Date(exp * 1000),
+            });
+
+            return {
+                success: true,
+                status: 200,
+                message: "Login Successful.",
+                access: accessToken,
+                refresh: refreshToken,
+            };
+        } else {
+            return {
+                success: false,
+                status: 401,
+                message: "Incorrect Password.",
+            };
+        }
+    }
+},
+  async refresh({ refreshToken }) {
+    console.log("Trying to refresh");
+    if (!refreshToken) {
+        return {
+            success: false,
+            status: 401,
+            message: "No refresh token provided.",
+        };
+    }
+
+    let decoded;
+    try {
+        decoded = verifyRefreshToken(refreshToken);
+    } catch (e) {
+        console.log(e);
+        return {
+            success: false,
+            status: 401,
+            message: "Invalid or expired refresh token.",
+        };
+    }
+
+    const tokenDoc = await tokenRepository.findById(decoded.jti).select("+tokenHash +expiresAt");
+
+    if (!tokenDoc) {
+        return {
+            success: false,
+            status: 401,
+            message: "Refresh token not recognized. Please log in again.",
+        };
+    }
+
+    const isValid = tokenDoc.tokenHash && (await verifyToken(tokenDoc.tokenHash, refreshToken));
+    if (!isValid) {
+        return {
+            success: false,
+            status: 401,
+            message: "Refresh token not recognized. Please log in again.",
+        };
+    }
+
+    if (tokenDoc.expiresAt < new Date()) {
+        return {
+            success: false,
+            status: 401,
+            message: "Refresh token expired. Please log in again.",
+        };
+    }
+
+    const user = await userRepository.findById(tokenDoc.userId).select("+tokenVersion");
+    if (!user) {
+        return {
+            success: false,
+            status: 404,
+            message: "No account found.",
+        };
+    }
+
+    console.log(decoded);
+    console.log(user);
+    if (decoded.tokenVersion !== user.tokenVersion) {
+        return {
+            success: false,
+            status: 401,
+            message: "Session expired. Please log in again.",
+        };
+    }
+
+    const newTokenId = new mongoose.Types.ObjectId();
+    const payload = {
+        id: user.id,
+        username: user.fullname,
+        email: user.email,
+        tokenVersion: user.tokenVersion,
+    };
+    const newAccessToken = generateAccessToken(payload);
+    const newRefreshToken = generateRefreshToken({ ...payload, jti: newTokenId.toString() });
+
+    const newHash = await hashToken(newRefreshToken);
+    const { exp } = jwt.decode(newRefreshToken);
+
+    await tokenRepository.deleteById(tokenDoc._id);
+    await tokenRepository.create({
+        _id: newTokenId,
+        userId: user.id,
+        tokenHash: newHash,
+        expiresAt: new Date(exp * 1000),
+    });
+
+    return {
+        success: true,
+        status: 200,
+        access: newAccessToken,
+        refresh: newRefreshToken,
+    };
+},
     async logout({ token }) {
         if (!token) {
             return {
@@ -211,7 +246,7 @@ const authService = {
         }
 
 
-        const tokenDoc = await tokenRepository.findOne({ _id: decoded.jti, revoked: false });
+        const tokenDoc = await tokenRepository.findById( decoded.jti);
         console.log(tokenDoc)
 
         if (!tokenDoc || !(await verifyToken(tokenDoc.tokenHash, token))) {
@@ -249,68 +284,73 @@ const authService = {
         }
         return await requestOtp(email);
     },
-    async changePassword({ email, otp, password }) {
+   async changePassword({ email, otp, password }) {
 
-        const user = await userRepository.findByEmail(email);
+    const user = await userRepository.findByEmail(email);
 
-        if (!user) {
-            return {
-                success: false,
-                status: 404,
-                message: "No account found.",
-            };
-        }
+    if (!user) {
+        return {
+            success: false,
+            status: 404,
+            message: "No account found.",
+        };
+    }
 
-        const response = await verifyUserOtp(email, otp);
+    const response = await verifyUserOtp(email, otp);
 
-        if (response.success !== true) {
-            return response;
-        }
+    if (response.success !== true) {
+        return response;
+    }
 
-        const hashedPassword = await hashPassword(password);
+    const hashedPassword = await hashPassword(password);
 
-        // Transaction should start here
-        const session = await mongoose.startSession();
+    const session = await mongoose.startSession();
 
-        try {
-            session.startTransaction();
+    try {
+        session.startTransaction();
 
-            await userRepository.updatePasswordByEmail(
-                email,
-                hashedPassword,
-                { session }
-            );
+        await userRepository.updatePasswordByEmail(
+            email,
+            hashedPassword,
+            { session }
+        );
 
-            await tokenRepository.deleteAllByUserId(
+       
+        await userRepository.incrementTokenVersion(
+            user._id,
+            { session }
+        );
+
+        await tokenRepository.deleteAllByUserId(
+            user._id,
+            { session }
+        );
+
+        if (!user.isVerified) {
+            await userRepository.markAsVerified(
                 user._id,
                 { session }
             );
-
-            if (!user.isVerified) {
-                await userRepository.markAsVerified(
-                    user._id,
-                    { session }
-                );
-            }
-
-            await session.commitTransaction();
-
-            return {
-                success: true,
-                status: 200,
-                message: "Password changed successfully.",
-            };
-
-        } catch (error) {
-
-            await session.abortTransaction();
-
-            throw error;
-
-        } finally {
-            session.endSession();
         }
-    },
+
+        await session.commitTransaction();
+
+        return {
+            success: true,
+            status: 200,
+            message: "Password changed successfully.",
+        };
+
+    } catch (error) {
+
+        await session.abortTransaction();
+
+        throw error;
+
+    } finally {
+        session.endSession();
+    }
+},
     async verifyOtp({ email, otp }) {
         const user = await userRepository.findByEmail(email);
 

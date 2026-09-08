@@ -15,8 +15,9 @@ const VerifyOtp = ({ navigation, route }) => {
   const [otpError, setotpError] = useState('');
   const [emailError, setEmailError] = useState('');
 
-  const [isLoading, setIsLoading] = useState(false);
-
+  // replaces isLoading boolean
+  const [status, setStatus] = useState('idle'); // idle | loading | success | error
+  const [statusMessage, setStatusMessage] = useState('');
 
   const boxRef = useRef(null);
   const [boxLayout, setBoxLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
@@ -34,41 +35,51 @@ const VerifyOtp = ({ navigation, route }) => {
     setotpError('');
     setEmailError('');
 
-    const emailError = validateEmail(email);
-    if (emailError) {
-      setEmailError(emailError);
+    const emailErr = validateEmail(email);
+    if (emailErr) {
+      setEmailError(emailErr);
       return;
     }
 
-    const otpError = validateOtp(otp.toString());
-    if (otpError) {
-      setotpError(otpError);
+    const otpErr = validateOtp(otp.toString());
+    if (otpErr) {
+      setotpError(otpErr);
       return;
     }
 
     // measure right before showing, so we always have the box's current position/size
     measureBox();
-    setIsLoading(true);
+    setStatus('loading');
 
     try {
-      const response = await authService.verifyOtp(
-        email,
-        otp
-      );
+      await authService.verifyOtp(email, otp);
 
-      navigation.replace('Login');
+      setStatus('success');
+      setStatusMessage('Verified!');
+
+      setTimeout(() => {
+        navigation.replace('Login');
+      }, 1000);
 
     } catch (error) {
-      setotpError(error.response?.data?.message || error.message);
       console.log('VERIFY OTP ERROR:', error);
       console.log('MESSAGE:', error.message);
       console.log('CODE:', error.code);
       console.log('STATUS:', error.response?.status);
       console.log('DATA:', error.response?.data);
-    } finally {
-      setIsLoading(false);
+
+      const message = error.response?.data?.message || error.message || 'Verification failed. Please try again.';
+      setStatus('error');
+      setStatusMessage(message);
+
+      setTimeout(() => {
+        setStatus('idle');
+        setotpError(message);
+      }, 1800);
     }
   };
+
+  const isBusy = status === 'loading' || status === 'success';
 
   return (
     <ScreenWrapper>
@@ -103,7 +114,7 @@ const VerifyOtp = ({ navigation, route }) => {
           style={styles.Otpbox}
         >
 
-          <View pointerEvents={isLoading ? "none" : "auto"} style={isLoading ? styles.disabledContent : null}>
+          <View pointerEvents={isBusy ? "none" : "auto"} style={isBusy ? styles.disabledContent : null}>
 
             <View style={[styles.inputContainer, otpFocus && { borderColor: "#6F49F6" }]}>
               <MaterialDesignIcons
@@ -136,9 +147,9 @@ const VerifyOtp = ({ navigation, route }) => {
 
       </View>
 
-    
+
       <Modal
-        visible={isLoading}
+        visible={status !== 'idle'}
         transparent
         animationType="fade"
         statusBarTranslucent
@@ -154,7 +165,15 @@ const VerifyOtp = ({ navigation, route }) => {
             },
           ]}
         >
-          <Loader title={"Verifying..."} />
+          <Loader
+            status={status === 'loading' ? 'loading' : status}
+            title={
+              status === 'loading' ? 'Verifying...' :
+              status === 'success' ? 'Verified!' :
+              'Verification failed'
+            }
+            subtitle={status === 'error' ? statusMessage : null}
+          />
         </View>
       </Modal>
     </ScreenWrapper>

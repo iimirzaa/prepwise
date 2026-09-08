@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { View, Text, Pressable, StyleSheet, Modal } from 'react-native';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import Header from '../../../components/profile_components/Header';
@@ -9,11 +9,21 @@ import Loader from '../../../components/Loading';
 import { clearTokens, getRefreshToken } from '../../storage/authstorage';
 import { authService } from '../../services/auth.service';
 import { useAuth } from '../../Utils/authcontext';
+import ShimmerBox from '../../../components/shimmer';
+import { useFocusEffect } from '@react-navigation/native';
+import { userService } from '../../services/user.service'
 
 const Profile = ({ navigation }) => {
     const { logout } = useAuth();
-    const [isLoading, setIsLoading] = useState(false);
+
+    // replaces isLoading boolean
+    const [status, setStatus] = useState('idle'); // idle | loading | success | error
+    const [statusMessage, setStatusMessage] = useState('');
+
+    const [ispLoading, setIsPLoading] = useState(true);
     const [logoutError, setLogoutError] = useState('');
+    const [email, setEmail] = useState('');
+    const [fullname, setFullName] = useState('');
 
     // measured screen position/size of the container, used to place the Modal overlay exactly on top of it
     const boxRef = useRef(null);
@@ -36,7 +46,6 @@ const Profile = ({ navigation }) => {
         {
             title: 'Interview Preferences',
             icon: 'tune-variant',
-
         },
         {
             title: 'Practice History',
@@ -52,33 +61,76 @@ const Profile = ({ navigation }) => {
         },
     ];
 
+    useFocusEffect(
+        useCallback(() => {
+            let isActive = true;
+
+            const fetchProfile = async () => {
+                setLogoutError('');
+                setIsPLoading(true);
+                try {
+                    const response = await userService.getProfile();
+                    if (isActive) {
+                        setEmail(response.data.message.email);
+                        setFullName(response.data.message.fullname);
+                        // whatever else you need to set from response
+                    }
+                } catch (error) {
+                    if (isActive) {
+                        setLogoutError(error.response?.data?.message || error.message);
+                        console.log('PROFILE FETCH ERROR:', error.message);
+                    }
+                } finally {
+                    if (isActive) setIsPLoading(false);
+                }
+            };
+
+            fetchProfile();
+
+            return () => {
+                isActive = false; // prevents setState after unmount/blur
+            };
+        }, []) // <-- empty deps array is the actual fix
+    );
+
     const handleLogout = async () => {
         setLogoutError('');
         const token = await getRefreshToken();
 
-        // measure right before showing, so we always have the container's current position/size
         measureBox();
-        setIsLoading(true);
+        setStatus('loading');
 
         try {
-            const response = await authService.logout(
-                token
-            );
+            await authService.logout(token);
             await clearTokens();
-            logout();
+
+            setStatus('success');
+            setStatusMessage('Logged out');
+
+            setTimeout(() => {
+                logout();
+            }, 800);
 
         } catch (error) {
-            setLogoutError(error.response?.data?.message || error.message);
             console.log('LOGOUT ERROR:', error);
             console.log('MESSAGE:', error.message);
             console.log('CODE:', error.code);
             console.log('STATUS:', error.response?.status);
             console.log('DATA:', error.response?.data);
-        } finally {
-            setIsLoading(false);
-        }
 
+            const message = error.response?.data?.message || error.message || 'Logout failed. Please try again.';
+            setStatus('error');
+            setStatusMessage(message);
+
+            setTimeout(() => {
+                setStatus('idle');
+                setLogoutError(message);
+            }, 1800);
+        }
     };
+
+    const isBusy = status === 'loading' || status === 'success';
+
     return (
         <ScreenWrapper>
             <View
@@ -86,21 +138,27 @@ const Profile = ({ navigation }) => {
                 onLayout={measureBox}
                 style={styles.container}
             >
-                <View pointerEvents={isLoading ? "none" : "auto"} style={isLoading ? styles.disabledContent : null}>
+                <View
+                    pointerEvents={isBusy ? "none" : "auto"}
+                    style={isBusy ? styles.disabledContent : null}
+                    // Android-only: forces this opacity view to render on an offscreen
+                    // buffer, which fixes elevation shadows below rendering as
+                    // duplicated/blocky when a parent has opacity < 1.
+                    needsOffscreenAlphaCompositing={isBusy}
+                >
                     <View style={styles.headerbox}>
                         <Text style={styles.heading}>Profile</Text></View>
-                    <Header />
+
+
+                    <Header email={email} name={fullname} isLoading={ispLoading} />
                     <View style={styles.setting}>
                         {
                             profileItems.map((item) => {
                                 return (
                                     <Tile key={item.title} icon={item.icon} text={item.title} onpress={item.press} />
-
                                 );
                             })
                         }
-
-
                     </View>
                     {logoutError && (
                         <Text style={styles.errorText}>{logoutError}</Text>
@@ -111,15 +169,15 @@ const Profile = ({ navigation }) => {
                             size={moderateScale(20)}
                             color="#D9534F"
                         />
-                        <Text>Logout</Text>
+                        <Text style={styles.logout}>Logout</Text>
                     </Pressable>
                 </View>
 
             </View>
 
-        
+
             <Modal
-                visible={isLoading}
+                visible={status !== 'idle'}
                 transparent
                 animationType="fade"
                 statusBarTranslucent
@@ -135,29 +193,33 @@ const Profile = ({ navigation }) => {
                         },
                     ]}
                 >
-                    <Loader />
+                    <Loader
+                        status={status === 'loading' ? 'loading' : status}
+                        title={
+                            status === 'loading' ? 'Logging out...' :
+                            status === 'success' ? 'Logged out' :
+                            'Logout failed'
+                        }
+                        subtitle={status === 'error' ? statusMessage : null}
+                    />
                 </View>
             </Modal>
         </ScreenWrapper>
-
     );
-
 }
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         width: '100%',
         paddingHorizontal: scale(10)
-
     },
     headerbox: {
         justifyContent: "flex-start"
-
     },
     heading: {
         fontSize: moderateScale(18),
         fontWeight: '800'
-
     },
     setting: {
         backgroundColor: 'white',
@@ -172,18 +234,12 @@ const styles = StyleSheet.create({
         height: verticalScale(40),
         flexDirection: 'row',
         elevation: 6,
-
         borderRadius: moderateScale(12),
-
         backgroundColor: '#FDECEC',
-
         justifyContent: 'flex-start',
         alignItems: 'center',
         paddingVertical: verticalScale(10),
-        paddingHorizontal: scale(10),
-
-
-
+        paddingHorizontal: scale(25),
         marginTop: verticalScale(10),
     },
     errorText: {
@@ -200,5 +256,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         borderRadius: moderateScale(12),
     },
+    logout: {
+        fontWeight: "800",
+        paddingLeft: scale(10)
+    }
 })
 export default Profile;

@@ -6,9 +6,10 @@ import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
 import { validateEmail, validatePassword } from '../../Utils/validator';
 import { authService } from '../../services/auth.service';
-import {saveTokens} from '../../storage/authstorage';
-import {useAuth} from '../../Utils/authcontext';
+import { saveTokens } from '../../storage/authstorage';
+import { useAuth } from '../../Utils/authcontext';
 import Loader from "../../../components/Loading";
+
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,10 +20,13 @@ const Login = ({ navigation }) => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
-  const [isLoading, setIsLoading] = useState(false);
-   const {login}=useAuth();
+  // replaces isLoading boolean
+  const [status, setStatus] = useState('idle'); // idle | loading | success | error
+  const [statusMessage, setStatusMessage] = useState('');
 
-  // measured screen position/size of SignUpbox, used to place the Modal overlay exactly on top of it
+  const { login } = useAuth();
+
+  // measured screen position/size of loginbox, used to place the Modal overlay exactly on top of it
   const boxRef = useRef(null);
   const [boxLayout, setBoxLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
 
@@ -33,49 +37,63 @@ const Login = ({ navigation }) => {
       });
     }
   };
+
   const handleSignupPress = () => {
     navigation.replace("SignUp");
   }
   const handleForgetPress = () => {
     navigation.replace('Otp');
   }
+
   const handleLogin = async () => {
     setEmailError('');
     setPasswordError('');
-    const emailError = validateEmail(email);
-    if (emailError) {
-      setEmailError(emailError);
+
+    const emailErr = validateEmail(email);
+    if (emailErr) {
+      setEmailError(emailErr);
       return;
     }
 
-    const passwordError = validatePassword(password);
-    if (passwordError) {
-      setPasswordError(passwordError);
+    const passwordErr = validatePassword(password);
+    if (passwordErr) {
+      setPasswordError(passwordErr);
       return;
     }
+
     measureBox();
-    setIsLoading(true);
+    setStatus('loading');
 
     try {
-      const response = await authService.login(
+      const response = await authService.login(email, password);
+      await saveTokens(response?.data.access, response?.data.refresh);
 
-        email,
-        password
-      );
-      await saveTokens(response?.data.access,response?.data.refresh);
-      login();
+      setStatus('success');
+      setStatusMessage('Logged in!');
+
+      setTimeout(() => {
+        login(); // switches navigator to the authenticated stack
+      }, 1000);
 
     } catch (error) {
-      setPasswordError(error.response?.data.message);
-      console.log('SIGNUP ERROR:', error);
+      console.log('LOGIN ERROR:', error);
       console.log('MESSAGE:', error.message);
       console.log('CODE:', error.code);
       console.log('STATUS:', error.response?.status);
       console.log('DATA:', error.response?.data);
-    } finally {
-      setIsLoading(false);
+
+      const message = error.response?.data?.message || error.message || 'Login failed. Please try again.';
+      setStatus('error');
+      setStatusMessage(message);
+
+      setTimeout(() => {
+        setStatus('idle');
+        setPasswordError(message);
+      }, 1800);
     }
   }
+
+  const isBusy = status === 'loading' || status === 'success';
 
   return (
     <ScreenWrapper>
@@ -92,10 +110,9 @@ const Login = ({ navigation }) => {
 
         <View ref={boxRef}
           onLayout={measureBox} style={styles.loginbox}>
-          <View pointerEvents={isLoading ? "none" : "auto"} style={isLoading ? styles.disabledContent : null}>
+          <View pointerEvents={isBusy ? "none" : "auto"} style={isBusy ? styles.disabledContent : null}>
             <Text style={styles.greet}>Welcome Back!</Text>
             <Text style={styles.wish}>Login to continue your journey</Text>
-
 
             <View style={[styles.inputContainer, emailFocus && { borderColor: "#6F49F6" }]}>
               <MaterialDesignIcons
@@ -113,7 +130,6 @@ const Login = ({ navigation }) => {
                 autoCapitalize="none"
                 value={email}
                 onChangeText={setEmail}>
-
               </TextInput>
             </View>
             {emailError && (
@@ -125,7 +141,6 @@ const Login = ({ navigation }) => {
               <TextInput
                 onFocus={() => setpFocus(true)}
                 onBlur={() => setpFocus(false)}
-
                 style={styles.input}
                 placeholder="Password"
                 placeholderTextColor="#999"
@@ -141,7 +156,6 @@ const Login = ({ navigation }) => {
                   <MaterialDesignIcons name="eye-off-outline" size={18} color={passwordFocus ? "#6F49F6" : "#888"} />
                 )}
               </Pressable>
-
             </View>
             {passwordError && (
               <Text style={styles.errorText}>{passwordError}</Text>
@@ -156,7 +170,7 @@ const Login = ({ navigation }) => {
         </View>
       </View>
       <Modal
-        visible={isLoading}
+        visible={status !== 'idle'}
         transparent
         animationType="fade"
         statusBarTranslucent
@@ -172,7 +186,15 @@ const Login = ({ navigation }) => {
             },
           ]}
         >
-          <Loader title={"Signing Up...."} />
+          <Loader
+            status={status === 'loading' ? 'loading' : status}
+            title={
+              status === 'loading' ? 'Logging in....' :
+              status === 'success' ? 'Logged in!' :
+              'Login failed'
+            }
+            subtitle={status === 'error' ? statusMessage : null}
+          />
         </View>
       </Modal>
     </ScreenWrapper>
@@ -197,7 +219,6 @@ const styles = StyleSheet.create({
   logoimg: {
     height: "100%",
     width: scale(60)
-
   },
   logotxt: {
     fontSize: moderateScale(24),
@@ -207,35 +228,29 @@ const styles = StyleSheet.create({
   loginbox: {
     height: "auto",
     width: "100%",
-
     padding: moderateScale(10),
     borderRadius: moderateScale(12),
     backgroundColor: "white",
     elevation: 10,
     shadowColor: "#000",
   },
-
   greet: {
     fontSize: moderateScale(24),
     color: "black",
     fontFamily: "Quicksand-Bold",
-
   },
   wish: {
     fontSize: moderateScale(16),
     color: "black",
     fontFamily: "Quicksand-Medium",
     paddingBottom: moderateScale(10)
-
   },
   img: {
     width: scale(280),
     height: verticalScale(220),
     resizeMode: "contain",
     alignSelf: "center",
-
   },
-
   inputContainer: {
     width: "100%",
     height: verticalScale(35),
@@ -247,10 +262,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: verticalScale(10),
-
-
   },
-
   input: {
     flex: 1,
     fontSize: moderateScale(16),
@@ -260,7 +272,6 @@ const styles = StyleSheet.create({
     textAlign: "right",
     fontFamily: "Quicksand-SemiBold",
     color: "#6F49F6"
-
   },
   tmpacc: {
     fontFamily: "Quicksand-SemiBold",
@@ -270,7 +281,6 @@ const styles = StyleSheet.create({
   disabledContent: {
     opacity: 0.5,
   },
-
   loadingOverlay: {
     position: "absolute",
     backgroundColor: "rgba(255,255,255,0.6)",
@@ -282,7 +292,6 @@ const styles = StyleSheet.create({
     color: "red",
     paddingHorizontal: scale(10)
   }
-
 });
 
 export default Login;

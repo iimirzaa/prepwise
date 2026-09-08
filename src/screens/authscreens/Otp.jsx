@@ -1,20 +1,21 @@
-import React, { useState,useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import ScreenWrapper from '../../../components/ScreenWrapper';
-import { StyleSheet, View, Image, Text, TextInput ,Modal} from 'react-native';
+import { StyleSheet, View, Image, Text, TextInput, Modal } from 'react-native';
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
 import MyButton from "../../../components/Botton";
 import { authService } from '../../services/auth.service';
 import Loader from '../../../components/Loading';
-import { validateEmail} from '../../Utils/validator';
+import { validateEmail } from '../../Utils/validator';
+
 const SendOtp = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [emailFocus, seteFocus] = useState(false);
-
   const [emailError, setEmailError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
-
+  // replaces isLoading boolean
+  const [status, setStatus] = useState('idle'); // idle | loading | success | error
+  const [statusMessage, setStatusMessage] = useState('');
 
   const boxRef = useRef(null);
   const [boxLayout, setBoxLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
@@ -26,42 +27,49 @@ const SendOtp = ({ navigation }) => {
       });
     }
   };
+
   const handleSendPress = async () => {
     setEmailError('');
 
-    const emailError = validateEmail(email);
-    if (emailError) {
-      setEmailError(emailError);
+    const emailErr = validateEmail(email);
+    if (emailErr) {
+      setEmailError(emailErr);
       return;
     }
 
-
     measureBox();
-    setIsLoading(true);
+    setStatus('loading');
 
     try {
-      const response = await authService.sendOtp(
+      await authService.sendOtp(email);
 
-        email
+      setStatus('success');
+      setStatusMessage('OTP sent!');
 
-      );
-
-      navigation.replace("change",{email:email});
-
+      setTimeout(() => {
+        navigation.replace("change", { email: email });
+      }, 1000);
 
     } catch (error) {
-      setEmailError(error.response?.data.message);
-      console.log('SIGNUP ERROR:', error);
+      console.log('SEND OTP ERROR:', error);
       console.log('MESSAGE:', error.message);
       console.log('CODE:', error.code);
       console.log('STATUS:', error.response?.status);
       console.log('DATA:', error.response?.data);
-    } finally {
-      setIsLoading(false);
+
+      const message = error.response?.data?.message || error.message || 'Could not send OTP. Please try again.';
+      setStatus('error');
+      setStatusMessage(message);
+
+      setTimeout(() => {
+        setStatus('idle');
+        setEmailError(message);
+      }, 1800);
     }
-
-
   }
+
+  const isBusy = status === 'loading' || status === 'success';
+
   return (
     <ScreenWrapper>
       <View style={styles.wrapper}>
@@ -79,79 +87,81 @@ const SendOtp = ({ navigation }) => {
           />
         </View>
         <Text style={[{ textAlign: "center" }, { fontFamily: "Quicksand-Medium" },
-
         ]}>Don't Worry! Enter your Email and we will send OTP.After verification you can reset your password</Text>
         <Image
           source={require("../../../assets/onboardlogo/forget.png")}
           style={styles.img}
         />
         <View style={styles.Otpbox} ref={boxRef} onLayout={measureBox}>
-     <View pointerEvents={isLoading ? "none" : "auto"} style={isLoading ? styles.disabledContent : null}>
+          <View pointerEvents={isBusy ? "none" : "auto"} style={isBusy ? styles.disabledContent : null}>
 
-
-          <View style={[styles.inputContainer, emailFocus && { borderColor: "#6F49F6" }]}>
-            <MaterialDesignIcons
-              name="email-outline"
-              size={18}
-              color={emailFocus ? "#6F49F6" : "#888"}
-            />
-            <TextInput
-              onFocus={() => seteFocus(true)}
-              onBlur={() => seteFocus(false)}
-
-              style={styles.input}
-              placeholder="Email"
-              placeholderTextColor="#999"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              value={email}
-              onChangeText={setEmail} />
-          </View>
-           {emailError && (
-                        <Text style={styles.errorText}>{emailError}</Text>
-                      )}
-          <MyButton text={"Send OTP"} onPress={handleSendPress} ></MyButton>
-          <View style={styles.instruction}>
-            <MaterialDesignIcons
-              name="shield-account"
-              size={24}
-              color="#6F49F6"
-            />
-            <Text style={styles.instTxt}>We will send you an otp for verification</Text>
+            <View style={[styles.inputContainer, emailFocus && { borderColor: "#6F49F6" }]}>
+              <MaterialDesignIcons
+                name="email-outline"
+                size={18}
+                color={emailFocus ? "#6F49F6" : "#888"}
+              />
+              <TextInput
+                onFocus={() => seteFocus(true)}
+                onBlur={() => seteFocus(false)}
+                style={styles.input}
+                placeholder="Email"
+                placeholderTextColor="#999"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail} />
+            </View>
+            {emailError && (
+              <Text style={styles.errorText}>{emailError}</Text>
+            )}
+            <MyButton text={"Send OTP"} onPress={handleSendPress} ></MyButton>
+            <View style={styles.instruction}>
+              <MaterialDesignIcons
+                name="shield-account"
+                size={24}
+                color="#6F49F6"
+              />
+              <Text style={styles.instTxt}>We will send you an otp for verification</Text>
+            </View>
           </View>
         </View>
-        </View>
-           
-
       </View>
       <Modal
-                visible={isLoading}
-                transparent
-                animationType="fade"
-                statusBarTranslucent
-              >
-                <View
-                  style={[
-                    styles.loadingOverlay,
-                    {
-                      top: boxLayout.y,
-                      left: boxLayout.x,
-                      width: boxLayout.width,
-                      height: boxLayout.height,
-                    },
-                  ]}
-                >
-                  <Loader title={"Sending...."} />
-                </View>
-              </Modal>
+        visible={status !== 'idle'}
+        transparent
+        animationType="fade"
+        statusBarTranslucent
+      >
+        <View
+          style={[
+            styles.loadingOverlay,
+            {
+              top: boxLayout.y,
+              left: boxLayout.x,
+              width: boxLayout.width,
+              height: boxLayout.height,
+            },
+          ]}
+        >
+          <Loader
+            status={status === 'loading' ? 'loading' : status}
+            title={
+              status === 'loading' ? 'Sending....' :
+              status === 'success' ? 'OTP sent!' :
+              'Could not send OTP'
+            }
+            subtitle={status === 'error' ? statusMessage : null}
+          />
+        </View>
+      </Modal>
     </ScreenWrapper>
-
   );
 }
+
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-
     alignItems: "center",
     width: "100%",
     paddingHorizontal: moderateScale(10),
@@ -159,7 +169,6 @@ const styles = StyleSheet.create({
   logowrapper: {
     flexDirection: "row",
     justifyContent: "center",
-
     alignItems: "center",
     height: verticalScale(50),
     width: "100%"
@@ -167,7 +176,6 @@ const styles = StyleSheet.create({
   logoimg: {
     height: "100%",
     width: scale(60)
-
   },
   logotxt: {
     fontSize: moderateScale(24),
@@ -189,12 +197,10 @@ const styles = StyleSheet.create({
     height: verticalScale(220),
     resizeMode: "contain",
     alignSelf: "center",
-
   },
   Otpbox: {
     height: "auto",
     width: "100%",
-
     padding: moderateScale(10),
     borderRadius: moderateScale(12),
     backgroundColor: "white",
@@ -213,7 +219,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: verticalScale(5),
   },
-
   input: {
     flex: 1,
     fontSize: moderateScale(16),
@@ -227,18 +232,15 @@ const styles = StyleSheet.create({
     height: verticalScale(40),
     justifyContent: "center",
     alignItems: "center"
-
-
   },
   instTxt: {
     fontFamily: "Quicksand-Regular",
     fontSize: moderateScale(14),
     paddingHorizontal: scale(5)
   },
-   disabledContent: {
+  disabledContent: {
     opacity: 0.5,
   },
-
   loadingOverlay: {
     position: "absolute",
     backgroundColor: "rgba(255,255,255,0.6)",
@@ -250,6 +252,5 @@ const styles = StyleSheet.create({
     color: "red",
     paddingHorizontal: scale(10)
   }
-
 });
 export default SendOtp;

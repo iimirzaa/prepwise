@@ -3,6 +3,7 @@ import Logger from './utils/logger.js';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import AuthRouter from './routes/auth.routes.js';
+import ProfileRouter from './routes/profile.routes.js';
 import connectDB from './config/db.js';
 const app = express();
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(morgan('combined', {
     }
 }));
 app.use('/prepwise/auth', AuthRouter);
+app.use('/prepwise/profile',ProfileRouter)
 connectDB().then(() => {
     try {
         app.listen(process.env.PORT, () => {

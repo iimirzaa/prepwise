@@ -17,6 +17,7 @@ export const generateRefreshToken =  (payload) => {
     )
 }
 export const verifyAccessToken = (token) => {
+  
     try {
         return jwt.verify(
             token,
@@ -27,7 +28,7 @@ export const verifyAccessToken = (token) => {
             }
         );
     } catch (error) {
-
+      
         if (error.name === "TokenExpiredError") {
             return{
 
@@ -52,8 +53,7 @@ export const verifyRefreshToken = (token) => {
             token,
             process.env.JWT_REFRESH_SECRET,
             {
-                issuer: "prepwise",
-                audience: "prepwise-mobile-app"
+               issuer: "prepwise", audience: "prepwise-mobile-app"
             }
         );
     } catch (error) {

@@ -6,11 +6,18 @@ import {
   scale,
   verticalScale,
 } from 'react-native-size-matters';
+import ShimmerBox from '../shimmer'; // the component from earlier
+import ProfileSkeleton from '../../src/skeleton/profileskeletion';
 
-const Header = () => {
+const Header = ({ isLoading, name, email, progress = 0 }) => {
+  if (isLoading) {
+    return (
+     <ProfileSkeleton />
+    );
+  }
+
   return (
     <View style={styles.card}>
-
       {/* Avatar */}
       <Image
         source={require('../../assets/onboardlogo/applogo.png')}
@@ -19,11 +26,9 @@ const Header = () => {
 
       {/* User Information */}
       <View style={styles.userInfo}>
-        <Text style={styles.name}>Demo</Text>
+        <Text style={styles.name}>{name}</Text>
 
-        <Text style={styles.email}>
-          demo@gmail.com
-        </Text>
+        <Text style={styles.email}>{email}</Text>
 
         {/* Profile Progress */}
         <View style={styles.progressButton}>
@@ -34,7 +39,7 @@ const Header = () => {
           />
 
           <Text style={styles.progressText}>
-            Profile 65%
+            Profile {progress}%
           </Text>
         </View>
       </View>
@@ -46,7 +51,6 @@ const Header = () => {
         color="#9E9E9E"
         style={styles.arrow}
       />
-
     </View>
   );
 };
@@ -71,14 +75,10 @@ const styles = StyleSheet.create({
   avatar: {
     width: scale(58),
     height: verticalScale(58),
-
     borderRadius: moderateScale(29),
-
     resizeMode: 'contain',
-
     borderWidth: moderateScale(1),
     borderColor: '#EEEEEE',
-
     marginRight: scale(12),
   },
 
@@ -91,30 +91,23 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(17),
     fontWeight: '700',
     color: '#222222',
-
     marginBottom: verticalScale(2),
   },
 
   email: {
     fontSize: moderateScale(12),
     color: '#777777',
-
     marginBottom: verticalScale(6),
   },
 
   progressButton: {
     alignSelf: 'flex-start',
-
     flexDirection: 'row',
     alignItems: 'center',
-
     paddingHorizontal: scale(9),
     paddingVertical: verticalScale(4),
-
     borderRadius: moderateScale(12),
-
     backgroundColor: '#F1E9FA',
-
     gap: scale(4),
   },
 
