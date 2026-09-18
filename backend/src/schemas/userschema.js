@@ -25,10 +25,12 @@ const userSchema = new mongoose.Schema(
             minlength: 6,
             select: false // won't be returned in queries by default
         },
-        isVerified:{
-            type:Boolean,
-            default:false
+        isVerified: {
+            type: Boolean,
+            default: false
         },
+        avatarUrl: { type: String, default: null },
+        avatarPublicId: { type: String, default: null },
         tokenVersion: { type: Number, default: 0 }
     },
     { timestamps: true }

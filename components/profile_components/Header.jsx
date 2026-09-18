@@ -9,7 +9,7 @@ import {
 import ShimmerBox from '../shimmer'; // the component from earlier
 import ProfileSkeleton from '../../src/skeleton/profileskeletion';
 
-const Header = ({ isLoading, name, email, progress = 0 }) => {
+const Header = ({ isLoading, name, email,profilePicture, progress = 0 }) => {
   if (isLoading) {
     return (
      <ProfileSkeleton />
@@ -20,9 +20,13 @@ const Header = ({ isLoading, name, email, progress = 0 }) => {
     <View style={styles.card}>
       {/* Avatar */}
       <Image
-        source={require('../../assets/onboardlogo/applogo.png')}
-        style={styles.avatar}
-      />
+  source={
+    profilePicture
+      ? { uri: profilePicture }
+      : require('../../assets/onboardlogo/applogo.png')
+  }
+  style={styles.avatar}
+/>
 
       {/* User Information */}
       <View style={styles.userInfo}>
@@ -76,7 +80,7 @@ const styles = StyleSheet.create({
     width: scale(58),
     height: verticalScale(58),
     borderRadius: moderateScale(29),
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     borderWidth: moderateScale(1),
     borderColor: '#EEEEEE',
     marginRight: scale(12),

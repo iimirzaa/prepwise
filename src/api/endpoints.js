@@ -9,6 +9,7 @@ export const END_POINTS={
         change:'/auth/changepassword'
     },
     profile:{
-        info:'profile/me'
+        info:'profile/me',
+        Upload:'profile/upload'
     }
 }

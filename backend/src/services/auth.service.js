@@ -78,60 +78,112 @@ const authService = {
             message: "Account verified successfully.",
         };
     },
-    async login({ email, password }) {
-    const user = await userRepository.findByEmail(email).select("+password");
+   async login({ email, password }) {
 
-    if (!user) {
-        return {
-            success: false,
-            status: 404,
-            message: "No account found with this email.",
-        };
-    }
-    if (!user.isVerified) {
-        return {
-            success: false,
-            status: 404,
-            message: "Please verify your email.",
-        };
-    }
-    if (user.isVerified) {
-        if (await verifyPassword(user.password, password)) {
-            const tokenId = new mongoose.Types.ObjectId();
+    const session = await mongoose.startSession();
 
-         
-            const payload = {
-                id: user.id,
-                username: user.fullname,
-                email: user.email,
-                tokenVersion: user.tokenVersion,
-            };
-            const accessToken = generateAccessToken(payload);
-            const refreshToken = generateRefreshToken({ ...payload, jti: tokenId.toString() });
+    try {
 
-            const { exp } = jwt.decode(refreshToken);
-            const refreshHash = await hashToken(refreshToken);
-            await tokenRepository.create({
-                _id: tokenId,
-                userId: user.id,
-                tokenHash: refreshHash,
-                expiresAt: new Date(exp * 1000),
-            });
+        session.startTransaction();
+
+        const user = await userRepository
+            .findByEmail(email,    { session })
+            .select('+password');
+
+        if (!user) {
+            await session.abortTransaction();
 
             return {
-                success: true,
-                status: 200,
-                message: "Login Successful.",
-                access: accessToken,
-                refresh: refreshToken,
+                success: false,
+                status: 404,
+                message: 'No account found with this email.',
             };
-        } else {
+        }
+
+        if (!user.isVerified) {
+            await session.abortTransaction();
+
             return {
                 success: false,
                 status: 401,
-                message: "Incorrect Password.",
+                message: 'Please verify your email.',
             };
         }
+
+        const isPasswordValid = await verifyPassword(
+            user.password,
+            password
+        );
+
+        if (!isPasswordValid) {
+            await session.abortTransaction();
+
+            return {
+                success: false,
+                status: 401,
+                message: 'Incorrect Password.',
+            };
+        }
+
+
+        const tokenId = new mongoose.Types.ObjectId();
+
+        const payload = {
+            id: user.id,
+            username: user.fullname,
+            email: user.email,
+            tokenVersion: user.tokenVersion,
+        };
+
+        const accessToken = generateAccessToken(payload);
+
+        const refreshToken = generateRefreshToken({
+            ...payload,
+            jti: tokenId.toString(),
+        });
+
+        const decoded = jwt.decode(refreshToken);
+
+        if (!decoded?.exp) {
+            throw new Error('Failed to decode refresh token');
+        }
+
+        const refreshHash = await hashToken(refreshToken);
+
+      
+
+        await tokenRepository.create(
+            {
+                _id: tokenId,
+                userId: user.id,
+                tokenHash: refreshHash,
+                expiresAt: new Date(decoded.exp * 1000),
+            },
+            { session }
+        );
+
+       
+
+        await session.commitTransaction();
+
+        return {
+            success: true,
+            status: 200,
+            message: 'Login Successful.',
+            access: accessToken,
+            refresh: refreshToken,
+        };
+
+    } catch (error) {
+
+        await session.abortTransaction();
+
+        throw error;
+
+    } finally {
+
+        await session.endSession();
+
     }
 },
   async refresh({ refreshToken }) {
@@ -155,7 +207,7 @@ const authService = {
             message: "Invalid or expired refresh token.",
         };
     }
-
+    console.log(decoded);
     const tokenDoc = await tokenRepository.findById(decoded.jti).select("+tokenHash +expiresAt");
 
     if (!tokenDoc) {

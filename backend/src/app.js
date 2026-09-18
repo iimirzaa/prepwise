@@ -22,6 +22,8 @@ app.use('/prepwise/auth', AuthRouter);
 app.use('/prepwise/profile',ProfileRouter)
 connectDB().then(() => {
     try {
+        
+      
         app.listen(process.env.PORT, () => {
             Logger.info(`Server running at ${process.env.PORT}`);
         })

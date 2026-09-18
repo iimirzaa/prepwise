@@ -1,7 +1,13 @@
 import User from '../schemas/userschema.js';
 
 const userRepository = {
-    findByEmail: (email) => User.findOne({ email }).select('+password'),
+      updateAvatar: (userId, { avatarUrl, avatarPublicId }) =>
+        User.findByIdAndUpdate(
+            userId,
+            { avatarUrl, avatarPublicId },
+            { new: true }
+        ).select('avatarUrl avatarPublicId'),
+    findByEmail: (email,options) => User.findOne({ email }, null, options).select('+password'),
 
     findById: (id) => User.findById(id).select('-password -isVerified'),
 

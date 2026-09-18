@@ -24,6 +24,7 @@ const Profile = ({ navigation }) => {
     const [logoutError, setLogoutError] = useState('');
     const [email, setEmail] = useState('');
     const [fullname, setFullName] = useState('');
+    const [url,setUrl]=useState('');
 
     // measured screen position/size of the container, used to place the Modal overlay exactly on top of it
     const boxRef = useRef(null);
@@ -41,7 +42,7 @@ const Profile = ({ navigation }) => {
         {
             title: 'Personal Information',
             icon: 'account-outline',
-            press: () => navigation.navigate('info')
+        press: () => navigation.navigate('info',{userEmail:email,fullname:fullname,url:url})
         },
         {
             title: 'Interview Preferences',
@@ -73,6 +74,7 @@ const Profile = ({ navigation }) => {
                     if (isActive) {
                         setEmail(response.data.message.email);
                         setFullName(response.data.message.fullname);
+                        setUrl(response.data.message.avatarUrl);
                         // whatever else you need to set from response
                     }
                 } catch (error) {
@@ -112,11 +114,11 @@ const Profile = ({ navigation }) => {
             }, 800);
 
         } catch (error) {
-            console.log('LOGOUT ERROR:', error);
-            console.log('MESSAGE:', error.message);
-            console.log('CODE:', error.code);
-            console.log('STATUS:', error.response?.status);
-            console.log('DATA:', error.response?.data);
+           
+            if( error.response?.status===401){
+                logout();
+            }
+   
 
             const message = error.response?.data?.message || error.message || 'Logout failed. Please try again.';
             setStatus('error');
@@ -141,16 +143,13 @@ const Profile = ({ navigation }) => {
                 <View
                     pointerEvents={isBusy ? "none" : "auto"}
                     style={isBusy ? styles.disabledContent : null}
-                    // Android-only: forces this opacity view to render on an offscreen
-                    // buffer, which fixes elevation shadows below rendering as
-                    // duplicated/blocky when a parent has opacity < 1.
-                    needsOffscreenAlphaCompositing={isBusy}
+                  
                 >
                     <View style={styles.headerbox}>
                         <Text style={styles.heading}>Profile</Text></View>
 
 
-                    <Header email={email} name={fullname} isLoading={ispLoading} />
+                    <Header email={email} name={fullname}  profilePicture={url} isLoading={ispLoading} />
                     <View style={styles.setting}>
                         {
                             profileItems.map((item) => {
