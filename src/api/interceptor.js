@@ -50,7 +50,7 @@ apiClient.interceptors.response.use(
 
     
         if (!refreshToken || isTokenExpired(refreshToken)) {
-            await clearTokens();
+        
             return Promise.reject(
                 new Error('Refresh token missing or expired')
             );

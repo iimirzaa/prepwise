@@ -10,6 +10,10 @@ export const END_POINTS={
     },
     profile:{
         info:'profile/me',
-        Upload:'profile/upload'
+        Upload:'profile/upload',
+        Update:'profile/update'
+    },
+    interview:{
+        generate:'interview/generate'
     }
 }

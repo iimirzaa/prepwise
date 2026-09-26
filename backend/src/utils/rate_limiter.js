@@ -17,3 +17,5 @@ const createLimiter = (max, windowMinutes, message, prefixName) => rateLimit({
 
 export const AuthLimiter = createLimiter(10, 1, "Try Again after 1 minutes.", "auth");
 export const ProfileLimiter = createLimiter(10, 1, "Try again after a while", "profile");
+export const InterviewLimiter = createLimiter(10, 1, "Try again after a while", "profile");
+

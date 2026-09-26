@@ -14,6 +14,7 @@ import {
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import BackBotton from '../../../components/BackButton';
+import { useAuth } from '../../Utils/authcontext';
 import {
   moderateScale,
   scale,
@@ -21,6 +22,8 @@ import {
 } from 'react-native-size-matters';
 
 import { userService } from '../../services/user.service';
+import { clearTokens } from '../../storage/authstorage';
+
 const pickerOptions = {
   mediaType: 'photo',
   quality: 0.8,
@@ -57,8 +60,7 @@ const takePhoto = async () => {
 const pickFromGallery = async () =>
   handleResult(await launchImageLibrary({ ...pickerOptions, selectionLimit: 1 }));
 
-
-const uploadAvatar = async (asset,url) => {
+const uploadAvatar = async (asset, logout) => {
   if (!asset?.uri) {
     throw new Error('No image selected');
   }
@@ -74,29 +76,25 @@ const uploadAvatar = async (asset,url) => {
     const data = await userService.uploadProfilePic(form);
     return data; // { url, publicId }
   } catch (err) {
-    setPreview(url);
     const status = err.response?.status;
     const serverMessage = err.response?.data?.message;
 
-    if (status === 400) {
-      throw new Error(serverMessage || 'That image could not be uploaded.');
-    }
+    if (status === 400) throw new Error(serverMessage || 'That image could not be uploaded.');
     if (status === 401) {
+      await clearTokens();
+      logout();
       throw new Error('Your session expired. Please log in again.');
     }
-    if (status === 413) {
-      throw new Error('Image is too large. Try a smaller one.');
-    }
-    if (!err.response) {
-      throw new Error('Network error — check your connection and try again.');
-    }
+    if (status === 413) throw new Error('Image is too large. Try a smaller one.');
+    if (!err.response) throw new Error('Network error — check your connection.');
     throw new Error(serverMessage || 'Upload failed. Please try again.');
   }
 };
 
-const ProfileInfo = ({ route }) => {
-  const {userEmail,fullname,url}=route.params;
-  
+const ProfileInfo = ({ navigation,route }) => {
+   const { logout } = useAuth();
+  const { userEmail, fullname, url } = route.params;
+
   const [fullName, setFullName] = useState(fullname);
   const [email, setEmail] = useState(userEmail);
 
@@ -104,21 +102,61 @@ const ProfileInfo = ({ route }) => {
   const [preview, setPreview] = useState(url);
   const [busy, setBusy] = useState(false);
 
-  const handlePick = async (fn,url) => {
+  const [showSave, setSave] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const handlePick = async (fn) => {
     setSheetVisible(false);
+    const previousUrl = preview;
     try {
       const asset = await fn();
       if (!asset) return;
-      setPreview(asset.uri);
-      setBusy(true);
-      const data = await uploadAvatar(asset,url);
 
+      setPreview(asset.uri); // optimistic
+      setBusy(true);
+
+      const data = await uploadAvatar(asset,logout);
+      setPreview(data.url); // real Cloudinary URL
     } catch (e) {
+      setPreview(previousUrl); // rollback
       console.warn(e.message);
     } finally {
       setBusy(false);
     }
   };
+
+  const handleFullNameChange = (text) => {
+    setFullName(text);
+    setSave(text !== fullname || email !== userEmail);
+  };
+
+  const handleEmailChange = (text) => {
+    setEmail(text);
+    setSave(fullName !== fullname || text !== userEmail);
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const result = await userService.updateUser({ fullname:fullName, email });
+
+      if (!result.success) {
+        console.warn(result.message);
+        return;
+      }
+
+      setFullName(result.data.fullName);
+      setEmail(result.data.email);
+      setSave(false);
+    } catch (e) {
+      console.warn(e.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+  const backPress=()=>{
+    navigation.goBack();
+  }
 
   return (
     <ScreenWrapper>
@@ -126,17 +164,25 @@ const ProfileInfo = ({ route }) => {
 
         {/* Header */}
         <View style={styles.header}>
-          <View style={styles.left}>
-            <BackBotton />
-          </View>
+          <View style={styles.left}/>
+           
+          
 
           <Text style={styles.headerTitle}>
             Profile Information
           </Text>
 
-          <Pressable style={styles.saveButton}>
-            <Text style={styles.saveText}>Save</Text>
-          </Pressable>
+          {showSave && (
+            <Pressable
+              style={styles.saveButton}
+              onPress={handleSave}
+              disabled={saving}
+            >
+              {saving
+                ? <ActivityIndicator size="small" color="#764ba2" />
+                : <Text style={styles.saveText}>Save</Text>}
+            </Pressable>
+          )}
         </View>
 
         {/* Avatar */}
@@ -173,7 +219,7 @@ const ProfileInfo = ({ route }) => {
 
             <TextInput
               value={fullName}
-              onChangeText={setFullName}
+              onChangeText={handleFullNameChange}
               placeholder="Enter your full name"
               placeholderTextColor="#999"
               style={styles.input}
@@ -186,7 +232,7 @@ const ProfileInfo = ({ route }) => {
 
             <TextInput
               value={email}
-              onChangeText={setEmail}
+              onChangeText={handleEmailChange}
               placeholder="Enter your email"
               placeholderTextColor="#999"
               keyboardType="email-address"
@@ -263,7 +309,7 @@ const styles = StyleSheet.create({
     width: scale(55),
     height: verticalScale(35),
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent:"center",
   },
 
   saveText: {

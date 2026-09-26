@@ -3,36 +3,18 @@ import {View,StyleSheet,Text} from 'react-native';
 import { moderateScale,scale, verticalScale } from 'react-native-size-matters';
 import IChip from './InterviewTypeChip';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
-const InterviewType=()=>{
+import { PrepwiseConstants } from '../constants/constants';
+const InterviewType=({onTypeChange})=>{
     const [selectedType, setSelectedType] = useState('behavioural');
-    const items=[
-    {label: 'Technical Interview', value: 'technical'},
-    {label: 'HR Interview', value: 'hr'},
-    {label: 'Behavioral Interview', value: 'behavioral'},
-  ];
+      const handleTypeChange = (type) => {
+    setSelectedType(type);
 
-  const types = [
-    {
-      id: 'behavioural',
-      title: 'Behavioural',
-      icon: 'account-outline',
-    },
-    {
-      id: 'technical',
-      title: 'Technical',
-      icon: 'file-document-outline',
-    },
-    {
-      id: 'hr',
-      title: 'HR',
-      icon: 'account-tie-outline',
-    },
-    {
-      id: 'custom',
-      title: 'Custom',
-      icon: 'tune-variant',
-    },
-  ];
+    // Send selected type to parent
+    onTypeChange(type);
+  };
+   
+
+
 
     return(
         <View style={styles.container}>
@@ -50,13 +32,13 @@ const InterviewType=()=>{
             
             <View style={styles.overviewchips}>
                 
-        {types.map(item => (
+        {PrepwiseConstants.types.map(item => (
           <IChip
             key={item.id}
             icon={item.icon}
             title={item.title}
             selected={selectedType === item.id}
-            onPress={() => setSelectedType(item.id)}
+            onPress={() => handleTypeChange(item.id)}
           />
         ))}
                 

@@ -1,0 +1,77 @@
+export const PrepwiseConstants={
+jobs : [
+  { title: 'Software Engineer', value: 'software_engineer' },
+  { title: 'Frontend Developer', value: 'frontend_developer' },
+  { title: 'Backend Developer', value: 'backend_developer' },
+  { title: 'Full Stack Developer', value: 'full_stack_developer' },
+  { title: 'Mobile App Developer', value: 'mobile_app_developer' },
+  { title: 'React Native Developer', value: 'react_native_developer' },
+  { title: 'Flutter Developer', value: 'flutter_developer' },
+  { title: 'UI/UX Designer', value: 'ui_ux_designer' },
+  { title: 'Graphic Designer', value: 'graphic_designer' },
+  { title: 'Data Analyst', value: 'data_analyst' },
+  { title: 'Data Scientist', value: 'data_scientist' },
+  { title: 'Machine Learning Engineer', value: 'machine_learning_engineer' },
+  { title: 'AI Engineer', value: 'ai_engineer' },
+  { title: 'DevOps Engineer', value: 'devops_engineer' },
+  { title: 'Cloud Engineer', value: 'cloud_engineer' },
+  { title: 'Cybersecurity Analyst', value: 'cybersecurity_analyst' },
+  { title: 'QA Engineer', value: 'qa_engineer' },
+  { title: 'Software Tester', value: 'software_tester' },
+  { title: 'Project Manager', value: 'project_manager' },
+  { title: 'Product Manager', value: 'product_manager' },
+  { title: 'Business Analyst', value: 'business_analyst' },
+  { title: 'Marketing Manager', value: 'marketing_manager' },
+  { title: 'Sales Representative', value: 'sales_representative' },
+  { title: 'Customer Support Representative', value: 'customer_support' },
+  { title: 'HR Manager', value: 'hr_manager' },
+  { title: 'Accountant', value: 'accountant' },
+  { title: 'Financial Analyst', value: 'financial_analyst' },
+  { title: 'Teacher', value: 'teacher' },
+  { title: 'Content Writer', value: 'content_writer' },
+  { title: 'Social Media Manager', value: 'social_media_manager' },
+],
+ difficultyLevels :[
+  { title: 'Easy', value: 'easy' },
+  { title: 'Medium', value: 'medium' },
+  { title: 'Hard', value: 'hard' },
+],
+
+
+experienceLevels :[
+  { title: 'Student', value: 'student' },
+  { title: 'Fresher', value: 'fresher' },
+  { title: '1 Year', value: '1_year' },
+  { title: '2 Years', value: '2_years' },
+  { title: '3 Years', value: '3_years' },
+  { title: '4 Years', value: '4_years' },
+  { title: '5+ Years', value: '5_plus_years' },
+],
+  items:[
+    {label: 'Technical Interview', value: 'technical'},
+    {label: 'HR Interview', value: 'hr'},
+    {label: 'Behavioral Interview', value: 'behavioral'},
+  ],
+    types : [
+      {
+        id: 'behavioural',
+        title: 'Behavioural',
+        icon: 'account-outline',
+      },
+      {
+        id: 'technical',
+        title: 'Technical',
+        icon: 'file-document-outline',
+      },
+      {
+        id: 'hr',
+        title: 'HR',
+        icon: 'account-tie-outline',
+      },
+      {
+        id: 'custom',
+        title: 'Custom',
+        icon: 'tune-variant',
+      },
+    ]
+};

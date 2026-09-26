@@ -14,4 +14,7 @@ export const userService = {
             transformRequest: (data) => data, 
         });
     },
+    async updateUser(data){
+        return apiClient.patch(END_POINTS.profile.Update,data);
+    }
 };

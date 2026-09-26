@@ -13,7 +13,7 @@ import {
 } from 'react-native-size-matters';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
 
-const SkillsContainer = () => {
+const SkillsContainer = ({onSkillsChange}) => {
   const [skills, setSkills] = useState([
     'React Native',
     'JavaScript',
@@ -23,26 +23,42 @@ const SkillsContainer = () => {
   const [showInput, setShowInput] = useState(false);
   const [skillInput, setSkillInput] = useState('');
 
-  const handleAddSkill = () => {
+   const handleAddSkill = () => {
     const skill = skillInput.trim();
 
     if (!skill) return;
 
     // Prevent duplicate skills
-    if (skills.some(item => item.toLowerCase() === skill.toLowerCase())) {
+    if (
+      skills.some(
+        item => item.toLowerCase() === skill.toLowerCase()
+      )
+    ) {
       setSkillInput('');
       setShowInput(false);
       return;
     }
 
-    setSkills(prev => [...prev, skill]);
+    const updatedSkills = [...skills, skill];
+
+    setSkills(updatedSkills);
+
+  
+    onSkillsChange(updatedSkills);
 
     setSkillInput('');
     setShowInput(false);
   };
 
   const handleRemoveSkill = skill => {
-    setSkills(prev => prev.filter(item => item !== skill));
+    const updatedSkills = skills.filter(
+      item => item !== skill
+    );
+
+    setSkills(updatedSkills);
+
+  
+    onSkillsChange(updatedSkills);
   };
 
   return (

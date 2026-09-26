@@ -1,6 +1,13 @@
 import User from '../schemas/userschema.js';
 
 const userRepository = {
+       updateUser:(userId,data)=>
+        User.findByIdAndUpdate(
+            userId,
+            {$set: data},
+            {new:true,runValidator:true}
+        ).select('-password -isVerified'),
+      
       updateAvatar: (userId, { avatarUrl, avatarPublicId }) =>
         User.findByIdAndUpdate(
             userId,

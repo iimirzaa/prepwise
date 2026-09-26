@@ -25,6 +25,21 @@ export const profileController={
             return res.status(response.status).json({ success: response.success, message: response.message });
 
         } catch (e) {
+            Logger.error("Error in Update User controller", e);
+            return res.status(501).json({ success: false, message: "Internal Server Error" });
+
+        }
+
+    },
+    async updateUser(req, res) {
+        try {
+            
+            Logger.debug("Update  request",req.body);
+          
+            const response = await profileService.updateUser(req.user,req.body);
+            return res.status(response.status).json({ success: response.success, message: response.message });
+
+        } catch (e) {
             Logger.error("Error in Profile  Picture controller", e);
             return res.status(501).json({ success: false, message: "Internal Server Error" });
 

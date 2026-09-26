@@ -1,9 +1,16 @@
-import React, {useRef, useState, useEffect} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import React, {useRef, useState, useEffect, useCallback} from 'react';
+import {View, Text, StyleSheet, AppState} from 'react-native';
+import {useIsFocused} from '@react-navigation/native';
 import ScreenWrapper from '../../../components/ScreenWrapper';
 import {moderateScale, scale, verticalScale} from 'react-native-size-matters';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
-import {Camera, useCameraDevice, useCameraPermission, useMicrophonePermission} from 'react-native-vision-camera';
+import {
+  Camera,
+  useCameraDevice,
+  useCameraPermission,
+  useMicrophonePermission,
+  useVideoOutput,
+} from 'react-native-vision-camera';
 import BarBox from '../../../components/Bar';
 import InterviewHeader from '../../../components/InterviewHeader';
 import QuestionCard from '../../../components/Questioncard';
@@ -18,7 +25,13 @@ const AttemptInterview = ({navigation}) => {
   const [cameraPosition, setCameraPosition] = useState('front');
   const device = useCameraDevice(cameraPosition);
 
-  const cameraRef = useRef(null);
+  const videoOutput = useVideoOutput({enableAudio: true});
+  const recorderRef = useRef(null);
+  const isMountedRef = useRef(true);
+  const lastVideoPathRef = useRef(null);
+
+  const isFocused = useIsFocused();
+  const [appState, setAppState] = useState(AppState.currentState);
 
   const {hasPermission: hasCameraPermission, requestPermission: requestCameraPermission} =
     useCameraPermission();
@@ -28,7 +41,6 @@ const AttemptInterview = ({navigation}) => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(3);
-
 
   const [metrics, setMetrics] = useState({
     eyeContact: 81,
@@ -42,6 +54,7 @@ const AttemptInterview = ({navigation}) => {
   });
 
   const permissionsGranted = hasCameraPermission && hasMicrophonePermission;
+  const isCameraActive = isFocused && appState === 'active';
 
   const requestPermissions = async () => {
     try {
@@ -52,6 +65,13 @@ const AttemptInterview = ({navigation}) => {
     }
   };
 
+  // Track app foreground/background so the camera isn't left running
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', setAppState);
+    return () => sub.remove();
+  }, []);
+
+  // Recording timer
   useEffect(() => {
     let interval;
 
@@ -62,71 +82,109 @@ const AttemptInterview = ({navigation}) => {
     return () => interval && clearInterval(interval);
   }, [isRecording]);
 
+  // Cleanup: stop any active recording when the screen unmounts
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      const recorder = recorderRef.current;
+      if (recorder) {
+        recorder.stopRecording().catch(() => {});
+        recorderRef.current = null;
+      }
+    };
+  }, []);
+
   const formatTime = seconds => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
   };
 
-  const startRecording = () => {
-    if (!cameraRef.current || isRecording) {
+  const startRecording = useCallback(async () => {
+    if (isRecording || recorderRef.current) {
       return;
     }
 
-    setRecordingTime(0);
-    setIsRecording(true);
-
     try {
-      cameraRef.current.startRecording({
-        onRecordingFinished: video => {
-          console.log('Recording finished:', video.path);
-          setIsRecording(false);
+      // A new Recorder must be created for every recording
+      const recorder = await videoOutput.createRecorder({});
+      recorderRef.current = recorder;
+
+      setRecordingTime(0);
+      setIsRecording(true);
+
+      await recorder.startRecording(
+        filePath => {
+          // Finished (stopped manually or by maxDuration)
+          lastVideoPathRef.current = filePath;
+          console.log('Recorded to', filePath);
+          recorderRef.current = null;
+          if (isMountedRef.current) {
+            setIsRecording(false);
+          }
+          // TODO: upload / analyze filePath here
         },
-        onRecordingError: error => {
+        error => {
           console.error('Recording error:', error);
-          setIsRecording(false);
+          recorderRef.current = null;
+          if (isMountedRef.current) {
+            setIsRecording(false);
+          }
         },
-      });
+      );
     } catch (error) {
-      console.error('Start recording error:', error);
-      setIsRecording(false);
+      console.error('Start recording error:', error?.message, error?.stack);
+      recorderRef.current = null;
+      if (isMountedRef.current) {
+        setIsRecording(false);
+      }
     }
-  };
+  }, [isRecording, videoOutput]);
 
-  const stopRecording = async () => {
-    if (!cameraRef.current || !isRecording) {
+  const stopRecording = useCallback(async () => {
+    const recorder = recorderRef.current;
+    if (!recorder) {
       return;
     }
 
     try {
-      await cameraRef.current.stopRecording();
+      await recorder.stopRecording();
+      // isRecording is reset in the onFinished callback above
     } catch (error) {
       console.error('Stop recording error:', error);
-      setIsRecording(false);
+      recorderRef.current = null;
+      if (isMountedRef.current) {
+        setIsRecording(false);
+      }
     }
-  };
+  }, []);
 
   const handleToggleRecord = () => (isRecording ? stopRecording() : startRecording());
 
-  const handleFlipCamera = () => setCameraPosition(prev => (prev === 'front' ? 'back' : 'front'));
-
-  const handleSkip = () => {
+  const handleFlipCamera = () => {
+    // Switching devices mid-recording would break the recording
     if (isRecording) {
-      stopRecording();
+      return;
+    }
+    setCameraPosition(prev => (prev === 'front' ? 'back' : 'front'));
+  };
+
+  const handleSkip = async () => {
+    if (isRecording) {
+      await stopRecording();
     }
     setQuestionIndex(prev => Math.min(prev + 1, TOTAL_QUESTIONS));
   };
 
-  const handleEndInterview = () => {
+  const handleEndInterview = async () => {
     if (isRecording) {
-      stopRecording();
+      await stopRecording();
     }
     navigation.navigate('Home');
   };
 
-  const handleHint = () => {
-   
-  };
+  const handleHint = () => {};
 
   if (!permissionsGranted) {
     return (
@@ -181,16 +239,17 @@ const AttemptInterview = ({navigation}) => {
           />
         </View>
 
-        <QuestionCard type="Behavioral" question="Tell me about a time you faced a challenge in a project. How did you handle it and what was the result?" />
+        <QuestionCard
+          type="Behavioral"
+          question="Tell me about a time you faced a challenge in a project. How did you handle it and what was the result?"
+        />
 
         <View style={styles.cameraContainer}>
           <Camera
-            ref={cameraRef}
             style={styles.camera}
             device={device}
-            isActive={true}
-            video={true}
-            audio={true}
+            isActive={isCameraActive}
+            outputs={[videoOutput]}
           />
 
           <RecordingWaveform isRecording={isRecording} onFlipCamera={handleFlipCamera} />
@@ -226,6 +285,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
+    paddingHorizontal: scale(10),
   },
   centerContainer: {
     flex: 1,

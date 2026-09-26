@@ -3,7 +3,7 @@ import {View,StyleSheet,Text} from 'react-native';
 import { moderateScale,scale } from 'react-native-size-matters';
 import OverviewChip from './OverviewChip';
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
-const Overview=()=>{
+const Overview=({difficulty})=>{
     return(
         <View style={styles.container}>
             <View style={styles.headingbox}>
@@ -18,7 +18,7 @@ const Overview=()=>{
             </View>
             <View style={styles.overviewchips}>
                 <OverviewChip icon={'file-document-outline'}title={'10'}subtitle={'Questions'}/>
-                <OverviewChip icon={'chart-line'}title={'intermediate'}subtitle={"Difficulty"}/>
+                <OverviewChip icon={'chart-line'}title={difficulty}subtitle={"Difficulty"}/>
                 <OverviewChip icon={'clock-outline'}title={'15 min'}subtitle={'Duration'}/>
                 <OverviewChip icon={'star-outline'}title={'AI-Powered'}subtitle={'Feedback'}/>
             </View>

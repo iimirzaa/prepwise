@@ -90,9 +90,9 @@ const Profile = ({ navigation }) => {
             fetchProfile();
 
             return () => {
-                isActive = false; // prevents setState after unmount/blur
+                isActive = false;
             };
-        }, []) // <-- empty deps array is the actual fix
+        }, []) 
     );
 
     const handleLogout = async () => {
